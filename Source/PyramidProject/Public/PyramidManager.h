@@ -9,7 +9,7 @@
 class ABoxNode;
 
 DECLARE_DELEGATE(FOnPyramidDestroyed);
-DECLARE_DELEGATE_TwoParams(FOnPyramidChange, int, AController*);
+DECLARE_DELEGATE_TwoParams(FOnPyramidChange, int, AActor*);
 
 UCLASS()
 class PYRAMIDPROJECT_API APyramidManager : public AActor
@@ -47,6 +47,6 @@ private:
 	UFUNCTION(Server, Reliable)
 		void ChangePyramidPos();
 
-	void OnBoxDestroy(ABoxNode* BoxToDestroy, AController* DamageActor);
+	void OnBoxDestroy(ABoxNode* BoxToDestroy, AActor* DamageActor);
 	int DestroyBoxes(ABoxNode* FirstNode);
 };

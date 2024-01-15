@@ -136,7 +136,7 @@ void APyramidManager::ChangePyramidPos_Implementation()
 	}
 }
 
-void APyramidManager::OnBoxDestroy(ABoxNode* BoxToDestroy, AController* DamageActor)
+void APyramidManager::OnBoxDestroy(ABoxNode* BoxToDestroy, AActor* DamageActor)
 {
 	const int BoxCount{ DestroyBoxes(BoxToDestroy) };
 	OnPyramidChange.ExecuteIfBound(BoxCount, DamageActor);

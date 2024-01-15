@@ -9,6 +9,7 @@
 void APyramidPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
 	ConfigureCurrentHUD();
 }
 
@@ -23,8 +24,11 @@ void APyramidPlayerController::ConfigureCurrentHUD()
 
 void APyramidPlayerController::ChangeScore(int BoxCount)
 {
-	MulticastChangeScore(BoxCount);
-	ChangeScoreInHUD(BoxCount);
+	if (HasAuthority()) 
+	{
+		MulticastChangeScore(BoxCount);
+		ChangeScoreInHUD(BoxCount);
+	}
 }
 
 void APyramidPlayerController::MulticastChangeScore_Implementation(int BoxCount)

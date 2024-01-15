@@ -12,6 +12,7 @@
 #include "MotionControllerComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "PyramidPlayerState.h"
+#include "PyramidPlayerController.h"
 //#include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -88,11 +89,11 @@ APyramidProjectCharacter::APyramidProjectCharacter()
 
 APlayerController* APyramidProjectCharacter::GetPlayerController()
 {
-	APlayerState* CharacterPlayerState = GetPlayerState();
+	AController* CurrentController = GetController();
 
-	if (CharacterPlayerState) 
+	if (CurrentController) 
 	{
-		return CharacterPlayerState->GetPlayerController();
+		return Cast<APlayerController>(CurrentController);
 	}
 
 	return nullptr;

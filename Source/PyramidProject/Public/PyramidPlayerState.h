@@ -17,3 +17,4 @@ class PYRAMIDPROJECT_API APyramidPlayerState : public APlayerState
 public:
 	void SetFibonacciScore(float ScoreDelta);
 };
+

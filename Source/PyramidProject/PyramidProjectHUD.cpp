@@ -43,6 +43,8 @@ void APyramidProjectHUD::DrawHUD()
 	FCanvasTileItem TileItem( CrosshairDrawPosition, CrosshairTex->Resource, FLinearColor::White);
 	TileItem.BlendMode = SE_BLEND_Translucent;
 	Canvas->DrawItem( TileItem );
+
+	DisplayPlayerName();
 }
 
 void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
@@ -88,6 +90,20 @@ void APyramidProjectHUD::ConfigureWidget()
 	}
 }
 
+void APyramidProjectHUD::DisplayPlayerName()
+{
+	auto CurrentPS = GetOwningPlayerController()->GetPlayerState<APyramidPlayerState>();
+	if (CurrentPS)
+	{
+		if (PlayerNameText)
+		{
+			FString DisplayName = CurrentPS->GetPlayerName();
+			FText NewPlayerNameText = FText::FromString(DisplayName);
+			PlayerNameText->SetText(NewPlayerNameText);
+		}
+	}
+}
+
 void APyramidProjectHUD::SetScorePoints(float ScorePoint) 
 {
 	if (DisplayText) 
@@ -96,22 +112,6 @@ void APyramidProjectHUD::SetScorePoints(float ScorePoint)
 		ScoreString.Append(FString::FromInt((int)ScorePoint));
 		FText ScoreText = FText::FromString(ScoreString);
 		DisplayText->SetText(ScoreText);
-	}
-}
-
-void APyramidProjectHUD::SetPlayerName(FString PlayerName)
-{
-	if (PlayerNameText) 
-	{
-		APlayerState* PlayerState = GetOwningPlayerController()->GetPlayerState<APyramidPlayerState>();
-
-		if (PlayerState)
-		{
-			PlayerName = PlayerState->GetPlayerName();
-		}
-
-		FText NewPlayerNameText = FText::FromString(PlayerName);
-		PlayerNameText->SetText(NewPlayerNameText);
 	}
 }
 

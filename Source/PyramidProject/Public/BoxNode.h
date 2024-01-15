@@ -9,7 +9,7 @@
 
 class UMaterialInstanceDynamic;
 
-DECLARE_DELEGATE_TwoParams(FOnBoxHit, ABoxNode*, AController*);
+DECLARE_DELEGATE_TwoParams(FOnBoxHit, ABoxNode*, AActor*);
 
 UCLASS()
 class PYRAMIDPROJECT_API ABoxNode : public AActor
@@ -50,7 +50,7 @@ public:
 	void SetPyramidPos(int PosX, int PosZ);
 	TTuple<int, int> GetPyramidPos();
 
-	void TakeHitDamage(AController* DamageActor);
+	void TakeHitDamage(AActor* DamageActor);
 
 	UFUNCTION(Server, Reliable)
 	void SetColor(FColor ColorType);

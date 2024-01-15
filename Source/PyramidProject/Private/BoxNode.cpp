@@ -45,7 +45,7 @@ TTuple<int, int> ABoxNode::GetPyramidPos()
 	return TTuple<int, int>(PyramidPosX, PyramidPosZ);
 }
 
-void ABoxNode::TakeHitDamage(AController* DamageActor)
+void ABoxNode::TakeHitDamage(AActor* DamageActor)
 {
 	OnBoxHit.ExecuteIfBound(this, DamageActor);
 }

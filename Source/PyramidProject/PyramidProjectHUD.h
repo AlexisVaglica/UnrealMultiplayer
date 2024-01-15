@@ -36,16 +36,14 @@ public:
 	APyramidProjectHUD();
 
 	virtual void BeginPlay() override;
-
 	virtual void DrawHUD() override;
 
 	void SetScorePoints(float ScorePoint);
-	void SetPlayerName(FString PlayerName);
 	void SetGameOverVisibility(const TArray<APlayerState*>& PlayerList);
+	void DisplayPlayerName();
 
 private:
 	void CreateScoreboardCell(FString PlayerName, int ScorePoints);
 	void ConfigureWidget();
-
 };
 

@@ -44,10 +44,8 @@ void APyramidProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 		/* if the otherActor is a ABoxTarget class, call the method in ABoxTarget for Damage */
 		if(OtherActor->IsA(ABoxNode::StaticClass()))
 		{
-			APlayerController* PlayerController = OwnerReference->GetPlayerController();
-
 			ABoxNode* BoxTarget = Cast<ABoxNode>(OtherActor);
-			BoxTarget->TakeHitDamage(PlayerController);
+			BoxTarget->TakeHitDamage(OwnerReference);
 		}
 
 		Destroy();
