@@ -8,6 +8,8 @@
 
 DECLARE_DELEGATE(FBulletWasDestroyedSignature);
 
+class APyramidProjectCharacter;
+
 UCLASS(config=Game)
 class APyramidProjectProjectile : public AActor
 {
@@ -22,7 +24,8 @@ class APyramidProjectProjectile : public AActor
 	class UProjectileMovementComponent* ProjectileMovement;
 
 private:
-	class APyramidProjectCharacter* OwnerReference;
+	UPROPERTY()
+	APyramidProjectCharacter* OwnerReference;
 
 	UFUNCTION()
 	void OnDestroyedActor(AActor* Actor);

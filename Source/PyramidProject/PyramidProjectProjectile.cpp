@@ -54,7 +54,10 @@ void APyramidProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 
 void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner)
 {
-	OwnerReference = PlayerOwner;
+	if (PlayerOwner) 
+	{
+		OwnerReference = PlayerOwner;
+	}
 }
 
 void APyramidProjectProjectile::OnDestroyedActor(AActor* Actor)
