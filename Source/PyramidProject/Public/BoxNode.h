@@ -33,6 +33,7 @@ protected:
 	FColor CurrentColorType;
 
 	/* Box Material */
+	UPROPERTY()
 	UMaterialInstanceDynamic* BoxMaterial;
 
 	/* Current Pyramid Position */

@@ -21,16 +21,16 @@ public:
 	FOnPyramidDestroyed OnPyramidDestroyed;
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Components)
 	TSubclassOf<ABoxNode> BoxNodeClass;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Components)
 	int BoxHeight{ 105 };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Components)
 	int8 PyramidRow { 7 };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Components)
 	TArray<FColor> ColorTypes;
 
 	TArray<ABoxNode*> BoxNodes;
