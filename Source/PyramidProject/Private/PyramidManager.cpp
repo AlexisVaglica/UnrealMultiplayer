@@ -144,5 +144,13 @@ void APyramidManager::OnBoxDestroy(ABoxNode* BoxToDestroy, AActor* DamageActor)
 	/* Verify is GameOver */
 	if (BoxNodes.Num() <= 0) {
 		OnPyramidDestroyed.ExecuteIfBound();
+
+		GameOverDismiss();
 	}
+}
+
+void APyramidManager::GameOverDismiss()
+{
+	OnPyramidChange.Unbind();
+	OnPyramidDestroyed.Unbind();
 }

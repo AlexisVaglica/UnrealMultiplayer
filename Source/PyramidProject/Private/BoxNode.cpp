@@ -56,6 +56,12 @@ void ABoxNode::ChangeMeshColor()
 	BoxMaterial->SetVectorParameterValue(FName(TEXT("DiffuseColor")), FLinearColor(CurrentColorType));
 }
 
+void ABoxNode::BoxDismiss()
+{
+	OnBoxHit.Unbind();
+	Destroy();
+}
+
 void ABoxNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -81,5 +87,6 @@ void ABoxNode::SetColor_Implementation(FColor ColorType)
 void ABoxNode::DestroyWithParticle_Implementation()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionParticles, GetActorLocation());
-	Destroy();
+
+	BoxDismiss();
 }

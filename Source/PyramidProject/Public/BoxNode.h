@@ -62,6 +62,8 @@ public:
 private:
 	void ChangeMeshColor();
 
+	void BoxDismiss();
+
 	UFUNCTION()
 	void OnRep_CurrentColorType();
 };

@@ -49,4 +49,5 @@ private:
 
 	void OnBoxDestroy(ABoxNode* BoxToDestroy, AActor* DamageActor);
 	int DestroyBoxes(ABoxNode* FirstNode);
+	void GameOverDismiss();
 };

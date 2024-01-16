@@ -54,13 +54,11 @@ void APyramidProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 
 void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner)
 {
-	if (PlayerOwner) 
-	{
-		OwnerReference = PlayerOwner;
-	}
+	OwnerReference = PlayerOwner;
 }
 
 void APyramidProjectProjectile::OnDestroyedActor(AActor* Actor)
 {
 	OnBulletWasDestroyed.ExecuteIfBound();
+	OnBulletWasDestroyed.Unbind();
 }
