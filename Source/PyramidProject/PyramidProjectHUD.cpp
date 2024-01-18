@@ -52,17 +52,33 @@ void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoint
 	const FName VerticalBoxName = FName(TEXT("VB_Player_List"));
 	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxName));
 
-	DisplayText = NewObject<UTextBlock>();
+	UTextBlock* NewScoreCell = NewObject<UTextBlock>();
 
-	VerticalBox->AddChildToVerticalBox(DisplayText);
+	ScoreCells.Add(PlayerName, NewScoreCell);
 
-	if (DisplayText != nullptr)
+	VerticalBox->AddChildToVerticalBox(NewScoreCell);
+
+	ConfigureScoreCell(NewScoreCell, PlayerName, ScorePoints);
+}
+
+void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
+{
+	if (ScoreCells.Num() > 0) 
+	{
+		UTextBlock* CurrentCell = ScoreCells[PlayerName];
+		ConfigureScoreCell(CurrentCell, PlayerName, Score);
+	}
+}
+
+void APyramidProjectHUD::ConfigureScoreCell(UTextBlock* ScoreCell, FString& PlayerName, int ScorePoints)
+{
+	if (ScoreCell != nullptr)
 	{
 		FString ScoreString = PlayerName;
 		ScoreString.Append(" - Score: ");
 		ScoreString.Append(FString::FromInt((int)ScorePoints));
 		FText ScoreText = FText::FromString(ScoreString);
-		DisplayText->SetText(ScoreText);
+		ScoreCell->SetText(ScoreText);
 	}
 }
 

@@ -16,5 +16,8 @@ class PYRAMIDPROJECT_API APyramidPlayerState : public APlayerState
 	
 public:
 	void SetFibonacciScore(float ScoreDelta);
+
+protected:
+	virtual void OnRep_Score() override;
 };
 

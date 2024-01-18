@@ -2,6 +2,8 @@
 
 
 #include "PyramidPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "PyramidPlayerController.h"
 
 void APyramidPlayerState::SetFibonacciScore(float ScoreDelta)
 {
@@ -16,4 +18,24 @@ void APyramidPlayerState::SetFibonacciScore(float ScoreDelta)
 
 	float Result = GetScore() + TermB;
 	SetScore(Result);
+}
+
+void APyramidPlayerState::OnRep_Score()
+{
+	Super::OnRep_Score();
+
+	FString RepPlayerName = GetPlayerName();
+	float RepScore = GetScore();
+
+	APlayerController* LocalPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (LocalPlayerController && LocalPlayerController->IsLocalController())
+	{
+		APyramidPlayerController* PyramidPlayerController = Cast<APyramidPlayerController>(LocalPlayerController);
+		
+		if (PyramidPlayerController) 
+		{
+			PyramidPlayerController->UpdateScoreboard(RepPlayerName, RepScore);
+		}
+	}
 }

@@ -26,6 +26,8 @@ public:
 
 	void ChangeScore(int BoxCount);
 
+	void UpdateScoreboard(FString PlayerName, float PlayerScore);
+
 protected:
 	virtual void BeginPlay() override;
 

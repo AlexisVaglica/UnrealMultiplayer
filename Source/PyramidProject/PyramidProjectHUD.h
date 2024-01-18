@@ -21,6 +21,8 @@ private:
 	UTextBlock* GameoverText;
 	UTextBlock* PlayerNameText;
 
+	TMap<FString, UTextBlock*> ScoreCells;
+
 	UTexture2D* CrosshairTex;
 
 	const FName TextScoreName{ FName(TEXT("TxtBox_Score")) };
@@ -41,9 +43,11 @@ public:
 	void SetScorePoints(float ScorePoint);
 	void SetGameOverVisibility(const TArray<APlayerState*>& PlayerList);
 	void DisplayPlayerName();
+	void UpdatePlayerScore(FString PlayerName, float Score);
 
 private:
 	void CreateScoreboardCell(FString PlayerName, int ScorePoints);
+	void ConfigureScoreCell(UTextBlock* NewScoreCell, FString& PlayerName, int ScorePoints);
 	void ConfigureWidget();
 };
 

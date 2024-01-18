@@ -22,6 +22,14 @@ void APyramidPlayerController::ConfigureCurrentHUD()
 	}
 }
 
+void APyramidPlayerController::UpdateScoreboard(FString PlayerName, float PlayerScore)
+{
+	if (CurrentHUD) 
+	{
+		CurrentHUD->UpdatePlayerScore(PlayerName, PlayerScore);
+	}
+}
+
 void APyramidPlayerController::ChangeScore(int BoxCount)
 {
 	if (HasAuthority()) 
@@ -47,3 +55,4 @@ void APyramidPlayerController::ChangeToGameOver_Implementation(const TArray<APla
 {
 	CurrentHUD->SetGameOverVisibility(PlayerList);
 }
+
