@@ -19,6 +19,7 @@ class APyramidProjectGameMode : public AGameMode
 
 public:
 	APyramidProjectGameMode();
+	void RestartGameplay();
 
 protected:
 	int PlayerStartIndex = 1;

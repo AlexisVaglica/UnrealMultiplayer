@@ -30,7 +30,7 @@ APyramidProjectProjectile::APyramidProjectProjectile()
 	ProjectileMovement->bShouldBounce = true;
 
 	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
+	InitialLifeSpan = MaxLifeTime;
 
 	// I Call the function when this projectile was Destroyed
 	this->OnDestroyed.AddDynamic(this, &APyramidProjectProjectile::OnDestroyedActor);

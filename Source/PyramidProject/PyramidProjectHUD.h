@@ -10,6 +10,7 @@
 class APyramidPlayerState;
 class UTexture2D;
 class UUserWidget;
+class UButton;
 
 UCLASS()
 class APyramidProjectHUD : public AHUD
@@ -20,6 +21,8 @@ private:
 	UTextBlock* DisplayText;
 	UTextBlock* GameoverText;
 	UTextBlock* PlayerNameText;
+	UTextBlock* NotifyText;
+	UButton* ResetButton;
 
 	TMap<FString, UTextBlock*> ScoreCells;
 
@@ -28,6 +31,11 @@ private:
 	const FName TextScoreName{ FName(TEXT("TxtBox_Score")) };
 	const FName TextGameoverName{ FName(TEXT("TxtBox_GameOver")) };
 	const FName TextPlayerName{ FName(TEXT("TxtBox_PlayerName")) };
+	const FName TextNotifyName{ FName(TEXT("TxtBox_Notify")) };
+	const FName ButtonResetName{ FName(TEXT("Btn_Reset")) };
+
+	const FString WaitNotify{ TEXT("Waiting for the Host...") };
+	const FString RestartingNotify{ TEXT("Restarting...") };
 
 protected:
 	TSubclassOf<class UUserWidget> WidgetClass;
@@ -49,5 +57,10 @@ private:
 	void CreateScoreboardCell(FString PlayerName, int ScorePoints);
 	void ConfigureScoreCell(UTextBlock* NewScoreCell, FString& PlayerName, int ScorePoints);
 	void ConfigureWidget();
+
+	void SetNotify(bool IsVisible, FString NotifyString);
+
+	UFUNCTION(Server, Reliable)
+	void ResetButtonPressed();
 };
 

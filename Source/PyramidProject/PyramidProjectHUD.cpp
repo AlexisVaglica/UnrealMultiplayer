@@ -9,8 +9,11 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Components/Button.h"
 #include "GameFramework/GameState.h"
 #include "PyramidPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "PyramidProject/PyramidProjectGameMode.h"
 
 APyramidProjectHUD::APyramidProjectHUD()
 {
@@ -47,41 +50,6 @@ void APyramidProjectHUD::DrawHUD()
 	DisplayPlayerName();
 }
 
-void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
-{
-	const FName VerticalBoxName = FName(TEXT("VB_Player_List"));
-	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxName));
-
-	UTextBlock* NewScoreCell = NewObject<UTextBlock>();
-
-	ScoreCells.Add(PlayerName, NewScoreCell);
-
-	VerticalBox->AddChildToVerticalBox(NewScoreCell);
-
-	ConfigureScoreCell(NewScoreCell, PlayerName, ScorePoints);
-}
-
-void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
-{
-	if (ScoreCells.Num() > 0) 
-	{
-		UTextBlock* CurrentCell = ScoreCells[PlayerName];
-		ConfigureScoreCell(CurrentCell, PlayerName, Score);
-	}
-}
-
-void APyramidProjectHUD::ConfigureScoreCell(UTextBlock* ScoreCell, FString& PlayerName, int ScorePoints)
-{
-	if (ScoreCell != nullptr)
-	{
-		FString ScoreString = PlayerName;
-		ScoreString.Append(" - Score: ");
-		ScoreString.Append(FString::FromInt((int)ScorePoints));
-		FText ScoreText = FText::FromString(ScoreString);
-		ScoreCell->SetText(ScoreText);
-	}
-}
-
 void APyramidProjectHUD::ConfigureWidget()
 {
 	if (WidgetClass)
@@ -95,15 +63,32 @@ void APyramidProjectHUD::ConfigureWidget()
 			DisplayText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextScoreName));
 			GameoverText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextGameoverName));
 			PlayerNameText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextPlayerName));
+			NotifyText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextNotifyName));
+			ResetButton = Cast<UButton>(Widget->GetWidgetFromName(ButtonResetName));
 
 			if (GameoverText != nullptr)
 			{
+				NotifyText->SetVisibility(ESlateVisibility::Hidden);
 				GameoverText->SetVisibility(ESlateVisibility::Hidden);
+				ResetButton->SetVisibility(ESlateVisibility::Hidden);
+			}
+
+			if (GetNetMode() == ENetMode::NM_ListenServer)
+			{
+				ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetButtonPressed);
 			}
 
 			SetScorePoints(0);
 		}
 	}
+}
+
+void APyramidProjectHUD::SetNotify(bool IsVisible, FString NotifyString)
+{
+	ESlateVisibility VisibilityType = IsVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+	NotifyText->SetVisibility(VisibilityType);
+	FText NewNotify = FText::FromString(NotifyString);
+	NotifyText->SetText(NewNotify);
 }
 
 void APyramidProjectHUD::DisplayPlayerName()
@@ -135,10 +120,66 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 {
 	GameoverText->SetVisibility(ESlateVisibility::Visible);
 
+	if (GetNetMode() == ENetMode::NM_ListenServer) 
+	{
+		ResetButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		SetNotify(true, WaitNotify);
+	}
+
 	for(APlayerState* PlayerState : PlayerList)
 	{
 		FString PlayerName = PlayerState->GetPlayerName();
 		float Score = PlayerState->GetScore();
 		CreateScoreboardCell(PlayerName, Score);
+	}
+}
+
+void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
+{
+	const FName VerticalBoxName = FName(TEXT("VB_Player_List"));
+	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxName));
+
+	UTextBlock* NewScoreCell = NewObject<UTextBlock>();
+
+	ScoreCells.Add(PlayerName, NewScoreCell);
+
+	VerticalBox->AddChildToVerticalBox(NewScoreCell);
+
+	ConfigureScoreCell(NewScoreCell, PlayerName, ScorePoints);
+}
+
+void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
+{
+	if (ScoreCells.Num() > 0)
+	{
+		UTextBlock* CurrentCell = ScoreCells[PlayerName];
+		ConfigureScoreCell(CurrentCell, PlayerName, Score);
+	}
+}
+
+void APyramidProjectHUD::ConfigureScoreCell(UTextBlock* ScoreCell, FString& PlayerName, int ScorePoints)
+{
+	if (ScoreCell != nullptr)
+	{
+		FString ScoreString = PlayerName;
+		ScoreString.Append(" - Score: ");
+		ScoreString.Append(FString::FromInt((int)ScorePoints));
+		FText ScoreText = FText::FromString(ScoreString);
+		ScoreCell->SetText(ScoreText);
+	}
+}
+
+void APyramidProjectHUD::ResetButtonPressed_Implementation()
+{
+	ResetButton->SetVisibility(ESlateVisibility::Hidden);
+	SetNotify(true, RestartingNotify);
+
+	APyramidProjectGameMode* CurrentGameMode = Cast<APyramidProjectGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (CurrentGameMode) 
+	{
+		CurrentGameMode->RestartGameplay();
 	}
 }

@@ -27,6 +27,9 @@ private:
 	UPROPERTY()
 	APyramidProjectCharacter* OwnerReference;
 
+	UPROPERTY(EditAnywhere)
+	float MaxLifeTime{ 3.f };
+
 	UFUNCTION()
 	void OnDestroyedActor(AActor* Actor);
 

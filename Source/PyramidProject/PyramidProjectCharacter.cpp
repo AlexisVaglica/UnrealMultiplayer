@@ -13,6 +13,7 @@
 #include "Net/UnrealNetwork.h"
 #include "PyramidPlayerState.h"
 #include "PyramidPlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 //#include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
@@ -295,4 +296,15 @@ bool APyramidProjectCharacter::EnableTouchscreenMovement(class UInputComponent* 
 	}
 	
 	return false;
+}
+
+void APyramidProjectCharacter::DisableCharacter()
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+
+	DisableInput(GetPlayerController());
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

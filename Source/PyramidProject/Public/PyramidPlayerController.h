@@ -34,6 +34,8 @@ protected:
 private:
 	void ConfigureCurrentHUD();
 
+	void DisableCharacter();
+
 	UFUNCTION(Client, Reliable)
 	void ChangeScoreInHUD(int BoxCount);
 

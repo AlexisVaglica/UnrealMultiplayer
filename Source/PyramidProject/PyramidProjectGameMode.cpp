@@ -97,3 +97,9 @@ AActor* APyramidProjectGameMode::ChoosePlayerStart_Implementation(AController* P
 	PlayerStartIndex++;
 	return FindPlayerStart(Player, PlayerTag);
 }
+
+void APyramidProjectGameMode::RestartGameplay() 
+{
+	RestartGame();
+	UE_LOG(LogTemp, Warning, TEXT("RestartGameplay"));
+}

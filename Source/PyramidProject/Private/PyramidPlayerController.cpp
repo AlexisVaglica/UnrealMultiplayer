@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "PyramidPlayerState.h"
 #include "PyramidProject/PyramidProjectHUD.h"
+#include "PyramidProject/PyramidProjectCharacter.h"
 
 void APyramidPlayerController::BeginPlay()
 {
@@ -53,6 +54,18 @@ void APyramidPlayerController::ChangeScoreInHUD_Implementation(int BoxCount)
 
 void APyramidPlayerController::ChangeToGameOver_Implementation(const TArray<APlayerState*>& PlayerList)
 {
+	DisableCharacter();
+	SetShowMouseCursor(true);
+
 	CurrentHUD->SetGameOverVisibility(PlayerList);
+}
+
+void APyramidPlayerController::DisableCharacter()
+{
+	APyramidProjectCharacter* PyramidCharacter = Cast<APyramidProjectCharacter>(GetPawn());
+	if (PyramidCharacter) 
+	{
+		PyramidCharacter->DisableCharacter();
+	}
 }
 
