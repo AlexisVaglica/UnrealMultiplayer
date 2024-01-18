@@ -66,12 +66,11 @@ void APyramidProjectHUD::ConfigureWidget()
 			NotifyText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextNotifyName));
 			ResetButton = Cast<UButton>(Widget->GetWidgetFromName(ButtonResetName));
 
-			if (GameoverText != nullptr)
-			{
-				NotifyText->SetVisibility(ESlateVisibility::Hidden);
-				GameoverText->SetVisibility(ESlateVisibility::Hidden);
-				ResetButton->SetVisibility(ESlateVisibility::Hidden);
-			}
+			VBButtons = Cast<UVerticalBox>(Widget->GetWidgetFromName(VerticalBoxName));
+
+			NotifyText->SetVisibility(ESlateVisibility::Hidden);
+			GameoverText->SetVisibility(ESlateVisibility::Hidden);
+			VBButtons->SetVisibility(ESlateVisibility::Hidden);
 
 			if (GetNetMode() == ENetMode::NM_ListenServer)
 			{
@@ -122,7 +121,7 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 
 	if (GetNetMode() == ENetMode::NM_ListenServer) 
 	{
-		ResetButton->SetVisibility(ESlateVisibility::Visible);
+		VBButtons->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
@@ -139,8 +138,8 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 
 void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
 {
-	const FName VerticalBoxName = FName(TEXT("VB_Player_List"));
-	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxName));
+	const FName VerticalBoxPlayerListName = FName(TEXT("VB_Player_List"));
+	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxPlayerListName));
 
 	UTextBlock* NewScoreCell = NewObject<UTextBlock>();
 
@@ -174,7 +173,7 @@ void APyramidProjectHUD::ConfigureScoreCell(UTextBlock* ScoreCell, FString& Play
 
 void APyramidProjectHUD::ResetButtonPressed_Implementation()
 {
-	ResetButton->SetVisibility(ESlateVisibility::Hidden);
+	VBButtons->SetVisibility(ESlateVisibility::Hidden);
 	SetNotify(true, RestartingNotify);
 
 	APyramidProjectGameMode* CurrentGameMode = Cast<APyramidProjectGameMode>(UGameplayStatics::GetGameMode(GetWorld()));

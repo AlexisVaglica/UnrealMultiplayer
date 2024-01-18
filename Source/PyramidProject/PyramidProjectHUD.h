@@ -11,6 +11,7 @@ class APyramidPlayerState;
 class UTexture2D;
 class UUserWidget;
 class UButton;
+class UVerticalBox;
 
 UCLASS()
 class APyramidProjectHUD : public AHUD
@@ -23,6 +24,8 @@ private:
 	UTextBlock* PlayerNameText;
 	UTextBlock* NotifyText;
 	UButton* ResetButton;
+	UVerticalBox* VBButtons;
+
 
 	TMap<FString, UTextBlock*> ScoreCells;
 
@@ -33,6 +36,7 @@ private:
 	const FName TextPlayerName{ FName(TEXT("TxtBox_PlayerName")) };
 	const FName TextNotifyName{ FName(TEXT("TxtBox_Notify")) };
 	const FName ButtonResetName{ FName(TEXT("Btn_Reset")) };
+	const FName VerticalBoxName{ FName(TEXT("VB_Buttons")) };
 
 	const FString WaitNotify{ TEXT("Waiting for the Host...") };
 	const FString RestartingNotify{ TEXT("Restarting...") };
