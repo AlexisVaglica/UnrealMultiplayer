@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "PyramidProjectCharacter.h"
-#include "PyramidProjectProjectile.h"
+#include "BoxGame/Character/PyramidProjectCharacter.h"
+#include "BoxGame/PyramidProjectProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,8 +11,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "PyramidPlayerState.h"
-#include "PyramidPlayerController.h"
+#include "BoxGame/Controllers/PyramidPlayerState.h"
+#include "BoxGame/Controllers/PyramidPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 //#include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 

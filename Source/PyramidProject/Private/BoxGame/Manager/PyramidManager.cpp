@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PyramidManager.h"
-#include "BoxNode.h"
+#include "BoxGame/Manager/PyramidManager.h"
+#include "BoxGame/BoxNode.h"
 
 // Sets default values
 APyramidManager::APyramidManager()

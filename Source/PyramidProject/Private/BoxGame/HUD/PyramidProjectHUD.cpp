@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "PyramidProjectHUD.h"
+#include "BoxGame/HUD/PyramidProjectHUD.h"
 #include "Engine/Canvas.h"
 #include "Engine/Texture2D.h"
 #include "TextureResource.h"
@@ -11,9 +11,9 @@
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
 #include "GameFramework/GameState.h"
-#include "PyramidPlayerState.h"
+#include "BoxGame/Controllers/PyramidPlayerState.h"
+#include "BoxGame/Controllers/PyramidProjectGameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "PyramidProject/PyramidProjectGameMode.h"
 
 APyramidProjectHUD::APyramidProjectHUD()
 {

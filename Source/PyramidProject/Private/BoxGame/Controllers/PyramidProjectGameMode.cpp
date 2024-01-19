@@ -1,13 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "PyramidProjectGameMode.h"
-#include "PyramidProjectHUD.h"
-#include "PyramidProjectCharacter.h"
+#include "BoxGame/Controllers/PyramidProjectGameMode.h"
+#include "BoxGame/HUD/PyramidProjectHUD.h"
+#include "BoxGame/Character/PyramidProjectCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
-#include "PyramidManager.h"
-#include "PyramidPlayerState.h"
-#include "PyramidPlayerController.h"
+#include "BoxGame/Manager/PyramidManager.h"
+#include "BoxGame/Controllers/PyramidPlayerState.h"
+#include "BoxGame/Controllers/PyramidPlayerController.h"
 
 APyramidProjectGameMode::APyramidProjectGameMode()
 	: Super()

@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "PyramidProjectProjectile.h"
+#include "BoxGame/PyramidProjectProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Public\BoxNode.h"
 #include "Components/SphereComponent.h"
-#include "PyramidProjectCharacter.h"
+#include "BoxGame/BoxNode.h"
+#include "BoxGame/Character/PyramidProjectCharacter.h"
 
 APyramidProjectProjectile::APyramidProjectProjectile() 
 {
