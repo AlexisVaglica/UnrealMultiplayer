@@ -14,17 +14,12 @@
 #include "BoxGame/Controllers/PyramidPlayerState.h"
 #include "BoxGame/Controllers/PyramidProjectGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "BoxGame/HUD/Score/ScoreCellWidget.h"
 
 APyramidProjectHUD::APyramidProjectHUD()
 {
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/FirstPerson/Textures/FirstPersonCrosshair"));
 	CrosshairTex = CrosshairTexObj.Object;
-
-	ConstructorHelpers::FClassFinder<UUserWidget> WidgetAsset(TEXT("/Game/ProjectGame/Blueprints/HUD/BP_HUD"));
-	if (WidgetAsset.Succeeded())
-	{
-		WidgetClass = WidgetAsset.Class;
-	}
 }
 
 void APyramidProjectHUD::BeginPlay()
@@ -52,21 +47,22 @@ void APyramidProjectHUD::DrawHUD()
 
 void APyramidProjectHUD::ConfigureWidget()
 {
-	if (WidgetClass)
+	if (UserWidgetClass)
 	{
-		Widget = CreateWidget<UUserWidget>(GetWorld(), WidgetClass);
+		UserWidget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
 
-		if (Widget)
+		if (UserWidget)
 		{
-			Widget->AddToViewport();
+			UserWidget->AddToViewport();
 
-			DisplayText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextScoreName));
-			GameoverText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextGameoverName));
-			PlayerNameText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextPlayerName));
-			NotifyText = Cast<UTextBlock>(Widget->GetWidgetFromName(TextNotifyName));
-			ResetButton = Cast<UButton>(Widget->GetWidgetFromName(ButtonResetName));
+			DisplayText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextScoreName));
+			GameoverText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextGameoverName));
+			PlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextPlayerName));
+			NotifyText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextNotifyName));
+			ResetButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonResetName));
 
-			VBButtons = Cast<UVerticalBox>(Widget->GetWidgetFromName(VerticalBoxName));
+			VBScoreboard = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(ScoreboardName));
+			VBButtons = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(VerticalBoxName));
 
 			NotifyText->SetVisibility(ESlateVisibility::Hidden);
 			GameoverText->SetVisibility(ESlateVisibility::Hidden);
@@ -117,7 +113,10 @@ void APyramidProjectHUD::SetScorePoints(float ScorePoint)
 
 void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& PlayerList)
 {
-	GameoverText->SetVisibility(ESlateVisibility::Visible);
+	if (GameoverText) 
+	{
+		GameoverText->SetVisibility(ESlateVisibility::Visible);
+	}
 
 	if (GetNetMode() == ENetMode::NM_ListenServer) 
 	{
@@ -138,14 +137,16 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 
 void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
 {
-	const FName VerticalBoxPlayerListName = FName(TEXT("VB_Player_List"));
-	class UVerticalBox* VerticalBox = (UVerticalBox*)(Widget->GetWidgetFromName(VerticalBoxPlayerListName));
+	if (!VBScoreboard) 
+	{
+		return;
+	}
 
-	UTextBlock* NewScoreCell = NewObject<UTextBlock>();
+	UScoreCellWidget* NewScoreCell = CreateWidget<UScoreCellWidget>(GetWorld(), ScoreCellWidgetClass);
 
 	ScoreCells.Add(PlayerName, NewScoreCell);
 
-	VerticalBox->AddChildToVerticalBox(NewScoreCell);
+	VBScoreboard->AddChildToVerticalBox(NewScoreCell);
 
 	ConfigureScoreCell(NewScoreCell, PlayerName, ScorePoints);
 }
@@ -154,20 +155,16 @@ void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
 {
 	if (ScoreCells.Num() > 0)
 	{
-		UTextBlock* CurrentCell = ScoreCells[PlayerName];
+		UScoreCellWidget* CurrentCell = ScoreCells[PlayerName];
 		ConfigureScoreCell(CurrentCell, PlayerName, Score);
 	}
 }
 
-void APyramidProjectHUD::ConfigureScoreCell(UTextBlock* ScoreCell, FString& PlayerName, int ScorePoints)
+void APyramidProjectHUD::ConfigureScoreCell(UScoreCellWidget* ScoreCell, FString& PlayerName, int ScorePoints)
 {
 	if (ScoreCell != nullptr)
 	{
-		FString ScoreString = PlayerName;
-		ScoreString.Append(" - Score: ");
-		ScoreString.Append(FString::FromInt((int)ScorePoints));
-		FText ScoreText = FText::FromString(ScoreString);
-		ScoreCell->SetText(ScoreText);
+		ScoreCell->SetupCell(PlayerName, ScorePoints);
 	}
 }
 

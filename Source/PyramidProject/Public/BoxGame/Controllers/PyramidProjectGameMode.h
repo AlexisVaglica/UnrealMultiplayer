@@ -28,8 +28,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<APyramidManager> PyramidSpawnerClass;
 
-	UPROPERTY(EditDefaultsOnly)
-	APyramidManager* MyPyramidSpawner;
+	UPROPERTY()
+	APyramidManager* PyramidManager;
 
 protected:
 	void ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer);

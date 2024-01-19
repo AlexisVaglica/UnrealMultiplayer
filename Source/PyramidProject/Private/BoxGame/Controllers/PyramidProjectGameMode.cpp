@@ -18,18 +18,15 @@ APyramidProjectGameMode::APyramidProjectGameMode()
 	HUDClass = APyramidProjectHUD::StaticClass();
 	PlayerStateClass = APyramidPlayerState::StaticClass();
 	PlayerControllerClass = APyramidPlayerController::StaticClass();
-
-	ConstructorHelpers::FClassFinder<AActor> PyramidSpawnerClassFinder(TEXT("/Game/ProjectGame/Blueprints/BP_PyramidSpawner"));
-	PyramidSpawnerClass = PyramidSpawnerClassFinder.Class;
 }
 
 void APyramidProjectGameMode::BeginPlay() {
 
 	Super::BeginPlay();
 
-	MyPyramidSpawner = GetWorld()->SpawnActor<APyramidManager>(PyramidSpawnerClass, FVector(0, 0, 0), FRotator(0, 0, 0));
-	MyPyramidSpawner->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
-	MyPyramidSpawner->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
+	PyramidManager = GetWorld()->SpawnActor<APyramidManager>(PyramidSpawnerClass, FVector(0, 0, 0), FRotator(0, 0, 0));
+	PyramidManager->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
+	PyramidManager->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
 }
 
 void APyramidProjectGameMode::ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer)
