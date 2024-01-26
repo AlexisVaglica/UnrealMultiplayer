@@ -3,6 +3,7 @@
 
 #include "BoxGame/HUD/MainMenu/MainMenuGameMode.h"
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -25,5 +26,5 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 
 void AMainMenuGameMode::QuitGame()
 {
-	FGenericPlatformMisc::RequestExit(false);
+	UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
 }
