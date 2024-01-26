@@ -10,7 +10,7 @@ class UButton;
 class UBorder;
 
 DECLARE_DELEGATE(FOnButtonPressed);
-DECLARE_DELEGATE_OneParam(FOnJoinButtonPressed, FString, name);
+DECLARE_DELEGATE_OneParam(FOnJoinButtonPressed, FString);
 
 /**
  * 

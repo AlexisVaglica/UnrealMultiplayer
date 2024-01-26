@@ -58,6 +58,7 @@ bool UMainMenuWidget::Initialize()
 void UMainMenuWidget::HostBtnClicked()
 {
 	BtnHost->SetIsEnabled(false);
+	BtnSearch->SetIsEnabled(true);
 	MapSelectorPanel->SetVisibility(ESlateVisibility::Visible);
 	GameSearchList->SetVisibility(ESlateVisibility::Hidden);
 }
@@ -101,7 +102,7 @@ void UMainMenuWidget::MultiplayerBtnClicked()
 
 void UMainMenuWidget::QuitGameBtnClicked()
 {
-	OnExitGameButtonPressed.ExecuteIfBound()
+	OnExitGameButtonPressed.ExecuteIfBound();
 }
 
 void UMainMenuWidget::SearchBtnClicked()

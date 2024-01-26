@@ -26,4 +26,8 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	void ConfigureMainMenuWidget();
+	void QuitGame();
+
 };

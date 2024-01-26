@@ -10,4 +10,20 @@ void AMainMenuGameMode::BeginPlay()
 
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(GetWorld(), MainMenuWidgetClass);
 	MainMenuWidget->AddToViewport();
+	ConfigureMainMenuWidget();
+}
+
+void AMainMenuGameMode::ConfigureMainMenuWidget()
+{
+	if (!MainMenuWidget) 
+	{
+		return;
+	}
+
+	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &AMainMenuGameMode::QuitGame);
+}
+
+void AMainMenuGameMode::QuitGame()
+{
+	FGenericPlatformMisc::RequestExit(false);
 }
