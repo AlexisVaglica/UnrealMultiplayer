@@ -11,6 +11,7 @@ class UBorder;
 
 DECLARE_DELEGATE(FOnButtonPressed);
 DECLARE_DELEGATE_OneParam(FOnJoinButtonPressed, FString);
+DECLARE_DELEGATE_OneParam(FOnLaunchButtonPressed, FString);
 
 /**
  * 
@@ -21,7 +22,6 @@ class PYRAMIDPROJECT_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	FOnButtonPressed OnHostButtonPressed;
 	FOnButtonPressed OnMenuDismissButtonPressed;
 	FOnButtonPressed OnSoloGameButtonPressed;
 	FOnButtonPressed OnExitGameButtonPressed;
@@ -29,6 +29,7 @@ public:
 	FOnButtonPressed OnConnectionButtonPressed;
 
 	FOnJoinButtonPressed OnJoinButtonPressed;
+	FOnLaunchButtonPressed OnLaunchButtonPressed;
 
 private:
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -56,6 +57,9 @@ private:
 	UButton* BtnJoin;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UButton* BtnLaunch;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UBorder* MainMenuPanel;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -66,6 +70,9 @@ private:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UBorder* MapSelectorPanel;
+
+public:
+	TSharedRef<SWidget, ESPMode::ThreadSafe> GetWidgetPrt();
 
 protected:
 	virtual bool Initialize() override;
@@ -96,5 +103,9 @@ private:
 	UFUNCTION()
 	void JoinBtnClicked();
 
+	UFUNCTION()
+	void LaunchBtnClicked();
+
 	void MenuDismiss();
+	void ChangeMapAndSearchVisibility(bool IsHostPressed, bool IsSearchPressed);
 };

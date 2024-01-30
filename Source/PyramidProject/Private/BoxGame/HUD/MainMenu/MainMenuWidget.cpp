@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/Border.h"
 
+
 bool UMainMenuWidget::Initialize()
 {
 	if (!Super::Initialize())
@@ -52,15 +53,17 @@ bool UMainMenuWidget::Initialize()
 		BtnJoin->OnClicked.AddDynamic(this, &ThisClass::JoinBtnClicked);
 	}
 
+	if (BtnLaunch) 
+	{
+		BtnLaunch->OnClicked.AddDynamic(this, &ThisClass::LaunchBtnClicked);
+	}
+
 	return true;
 }
 
 void UMainMenuWidget::HostBtnClicked()
 {
-	BtnHost->SetIsEnabled(false);
-	BtnSearch->SetIsEnabled(true);
-	MapSelectorPanel->SetVisibility(ESlateVisibility::Visible);
-	GameSearchList->SetVisibility(ESlateVisibility::Hidden);
+	ChangeMapAndSearchVisibility(true, false);
 }
 
 void UMainMenuWidget::JoinBtnClicked()
@@ -69,18 +72,36 @@ void UMainMenuWidget::JoinBtnClicked()
 	//ToDo: Add the connectionSelected
 }
 
+void UMainMenuWidget::LaunchBtnClicked()
+{
+	OnLaunchButtonPressed.ExecuteIfBound("DesertMap");
+}
+
 void UMainMenuWidget::MenuDismiss()
 {
-	OnHostButtonPressed.Unbind();
-	OnMenuDismissButtonPressed.Unbind();
 	OnSoloGameButtonPressed.Unbind();
 	OnExitGameButtonPressed.Unbind();
 	OnSearchButtonPressed.Unbind();
 	OnConnectionButtonPressed.Unbind();
 	OnJoinButtonPressed.Unbind();
+	OnLaunchButtonPressed.Unbind();
 
 	OnMenuDismissButtonPressed.ExecuteIfBound();
 	OnMenuDismissButtonPressed.Unbind();
+}
+
+void UMainMenuWidget::ChangeMapAndSearchVisibility(bool IsHostPressed, bool IsSearchPressed)
+{
+	ESlateVisibility HostSlateVisibility = IsHostPressed ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+	ESlateVisibility SearchSlateVisibility = IsSearchPressed ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+
+	BtnHost->SetIsEnabled(!IsHostPressed);
+	BtnSearch->SetIsEnabled(!IsSearchPressed);
+
+	BtnLaunch->SetVisibility(HostSlateVisibility);
+
+	MapSelectorPanel->SetVisibility(HostSlateVisibility);
+	GameSearchList->SetVisibility(SearchSlateVisibility);
 }
 
 void UMainMenuWidget::NativeDestruct()
@@ -107,10 +128,7 @@ void UMainMenuWidget::QuitGameBtnClicked()
 
 void UMainMenuWidget::SearchBtnClicked()
 {
-	BtnHost->SetIsEnabled(true);
-	BtnSearch->SetIsEnabled(false);
-	MapSelectorPanel->SetVisibility(ESlateVisibility::Hidden);
-	GameSearchList->SetVisibility(ESlateVisibility::Visible);
+	ChangeMapAndSearchVisibility(false, true);
 
 	OnSearchButtonPressed.ExecuteIfBound();
 }
@@ -125,6 +143,12 @@ void UMainMenuWidget::BackBtnClicked()
 {
 	MainMenuPanel->SetVisibility(ESlateVisibility::Visible);
 	MultiplayerPanel->SetVisibility(ESlateVisibility::Hidden);
+	ChangeMapAndSearchVisibility(false, false);
+}
+
+TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
+{
+	return TakeWidget();
 }
 
 /*void UMainMenuWidget::ShowMessageInGame(FString Message, FColor Color)

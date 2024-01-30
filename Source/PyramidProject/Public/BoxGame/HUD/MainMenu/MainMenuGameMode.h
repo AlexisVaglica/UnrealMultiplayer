@@ -28,6 +28,7 @@ protected:
 
 private:
 	void ConfigureMainMenuWidget();
+	void LaunchGame(FString MapName);
 	void QuitGame();
 
 };

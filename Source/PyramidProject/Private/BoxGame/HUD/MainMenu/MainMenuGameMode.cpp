@@ -4,6 +4,7 @@
 #include "BoxGame/HUD/MainMenu/MainMenuGameMode.h"
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -11,6 +12,8 @@ void AMainMenuGameMode::BeginPlay()
 
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(GetWorld(), MainMenuWidgetClass);
 	MainMenuWidget->AddToViewport();
+	MainMenuWidget->bIsFocusable = true;
+
 	ConfigureMainMenuWidget();
 }
 
@@ -21,7 +24,14 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 		return;
 	}
 
-	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &AMainMenuGameMode::QuitGame);
+	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchGame);
+	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
+}
+
+void AMainMenuGameMode::LaunchGame(FString MapName)
+{
+	//ToDo: Send To Lobby
+	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
 }
 
 void AMainMenuGameMode::QuitGame()
