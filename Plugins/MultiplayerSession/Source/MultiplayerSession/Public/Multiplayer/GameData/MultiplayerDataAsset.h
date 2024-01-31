@@ -13,23 +13,23 @@ UCLASS()
 class MULTIPLAYERSESSION_API UMultiplayerDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(EditAnywhere, Category = "Game Data")
 	FText GameTypeName;
-
-	UPROPERTY(EditAnywhere, Category = "Game Data")
-	TSoftObjectPtr<UTexture2D> GameImage;
 
 	UPROPERTY(EditAnywhere, Category = "Game Data")
 	FText GameDescription;
 
 	UPROPERTY(EditAnywhere, Category = "Game Data")
 	int32 MaxPlayersCount;
-
-	UPROPERTY(EditAnywhere, Category = "Game Data", meta=(AllowedTypes="Map"))
-	TArray<FPrimaryAssetId> Maps;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Data")
+	TSoftObjectPtr<UWorld> Map;
 
 	UPROPERTY(EditAnywhere, Category = "Game Data")
-	TArray<FText> GameMapName;
+	FText GameMapName;
+
+	UPROPERTY(EditAnywhere, Category = "Game Data")
+	TSoftObjectPtr<UTexture2D> MapImage;
 };
