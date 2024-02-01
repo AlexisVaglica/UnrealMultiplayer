@@ -8,10 +8,11 @@
 
 class UButton;
 class UBorder;
+class UHorizontalBox;
+class UMapSelectorCell;
 
 DECLARE_DELEGATE(FOnButtonPressed);
-DECLARE_DELEGATE_OneParam(FOnJoinButtonPressed, FString);
-DECLARE_DELEGATE_OneParam(FOnLaunchButtonPressed, FString);
+DECLARE_DELEGATE_OneParam(FOnEnterGameWithMap, FString);
 
 /**
  * 
@@ -23,13 +24,13 @@ class PYRAMIDPROJECT_API UMainMenuWidget : public UUserWidget
 	
 public:
 	FOnButtonPressed OnMenuDismissButtonPressed;
-	FOnButtonPressed OnSoloGameButtonPressed;
 	FOnButtonPressed OnExitGameButtonPressed;
 	FOnButtonPressed OnSearchButtonPressed;
 	FOnButtonPressed OnConnectionButtonPressed;
 
-	FOnJoinButtonPressed OnJoinButtonPressed;
-	FOnLaunchButtonPressed OnLaunchButtonPressed;
+	FOnEnterGameWithMap OnJoinButtonPressed;
+	FOnEnterGameWithMap OnSoloGameButtonPressed;
+	FOnEnterGameWithMap OnLaunchButtonPressed;
 
 private:
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -71,8 +72,15 @@ private:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UBorder* MapSelectorPanel;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	UHorizontalBox* MapSelectorHBox;
+
+	FString CurrentMapSelectedName{""};
+
 public:
 	TSharedRef<SWidget, ESPMode::ThreadSafe> GetWidgetPrt();
+
+	void SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass);
 
 protected:
 	virtual bool Initialize() override;
@@ -106,6 +114,10 @@ private:
 	UFUNCTION()
 	void LaunchBtnClicked();
 
+	UFUNCTION()
+	void MapSelected(FString MapSelectedName);
+
 	void MenuDismiss();
 	void ChangeMapAndSearchVisibility(bool IsHostPressed, bool IsSearchPressed);
+	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
 };

@@ -7,6 +7,8 @@
 #include "MainMenuGameMode.generated.h"
 
 class UMainMenuWidget;
+class UMultiplayerDataAsset;
+class UMapSelectorCell;
 
 /**
  * 
@@ -20,6 +22,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TArray<UMultiplayerDataAsset*> MultiplayerMapData;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
+
 	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
@@ -29,6 +37,7 @@ protected:
 private:
 	void ConfigureMainMenuWidget();
 	void LaunchGame(FString MapName);
+	void SoloGame(FString MapName);
 	void QuitGame();
 
 };

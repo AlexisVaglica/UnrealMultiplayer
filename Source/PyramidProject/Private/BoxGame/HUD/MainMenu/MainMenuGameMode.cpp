@@ -5,6 +5,7 @@
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "MultiplayerSession/Public/Multiplayer/GameData/MultiplayerDataAsset.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -12,7 +13,7 @@ void AMainMenuGameMode::BeginPlay()
 
 	MainMenuWidget = CreateWidget<UMainMenuWidget>(GetWorld(), MainMenuWidgetClass);
 	MainMenuWidget->AddToViewport();
-	MainMenuWidget->bIsFocusable = true;
+	MainMenuWidget->SetIsFocusable(true);
 
 	ConfigureMainMenuWidget();
 }
@@ -26,11 +27,27 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 
 	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchGame);
 	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
+	MainMenuWidget->OnSoloGameButtonPressed.BindUObject(this, &ThisClass::SoloGame);
+
+	TMap<FString, UTexture2D*> Maps;
+
+	for (UMultiplayerDataAsset* DataAsset : MultiplayerMapData)
+	{
+		TTuple<FString, UTexture2D*> Map = TTuple<FString, UTexture2D*>(DataAsset->GameMapName.ToString(), DataAsset->MapImage.Get());
+		Maps.Add(Map);
+	}
+
+	MainMenuWidget->SetMapGame(Maps, MapSelectorCellClass);
 }
 
 void AMainMenuGameMode::LaunchGame(FString MapName)
 {
 	//ToDo: Send To Lobby
+	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
+}
+
+void AMainMenuGameMode::SoloGame(FString MapName)
+{
 	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
 }
 

@@ -2,8 +2,12 @@
 
 
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
+#include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
+#include "Components/TextBlock.h"
+#include "Components/HorizontalBox.h"
+#include "Components/CanvasPanelSlot.h"
 
 
 bool UMainMenuWidget::Initialize()
@@ -56,6 +60,7 @@ bool UMainMenuWidget::Initialize()
 	if (BtnLaunch) 
 	{
 		BtnLaunch->OnClicked.AddDynamic(this, &ThisClass::LaunchBtnClicked);
+		BtnLaunch->SetIsEnabled(false);
 	}
 
 	return true;
@@ -74,7 +79,22 @@ void UMainMenuWidget::JoinBtnClicked()
 
 void UMainMenuWidget::LaunchBtnClicked()
 {
-	OnLaunchButtonPressed.ExecuteIfBound("DesertMap");
+	if (CurrentMapSelectedName != "")
+	{
+		OnLaunchButtonPressed.ExecuteIfBound(CurrentMapSelectedName);
+	}
+}
+
+void UMainMenuWidget::MapSelected(FString MapSelectedName)
+{
+	CurrentMapSelectedName = MapSelectedName;
+
+	if (BtnLaunch)
+	{
+		BtnLaunch->SetIsEnabled(CurrentMapSelectedName != "");
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("MapSelected"));
 }
 
 void UMainMenuWidget::MenuDismiss()
@@ -112,7 +132,7 @@ void UMainMenuWidget::NativeDestruct()
 
 void UMainMenuWidget::SoloGameBtnClicked()
 {
-	OnSoloGameButtonPressed.ExecuteIfBound();
+	OnSoloGameButtonPressed.ExecuteIfBound("PortMap");
 }
 
 void UMainMenuWidget::MultiplayerBtnClicked()
@@ -149,6 +169,31 @@ void UMainMenuWidget::BackBtnClicked()
 TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
 {
 	return TakeWidget();
+}
+
+void UMainMenuWidget::SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass)
+{
+	if (NewMaps.Num() > 0)
+	{
+		TArray<FString> MapNames;
+		NewMaps.GetKeys(MapNames);
+
+		for (FString MapName : MapNames)
+		{
+			CreateMapSelectCell(MapName, NewMaps[MapName], MapCellClass);
+		}
+	}
+}
+
+void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass)
+{
+	if (MapSelectorHBox)
+	{
+		UMapSelectorCell* MapCellWidget = CreateWidget<UMapSelectorCell>(this, MapCellClass);
+		MapCellWidget->ConfigureCell(MapName, MapImage);
+		MapCellWidget->OnMapButtonPressed.BindUObject(this, &ThisClass::MapSelected);
+		MapSelectorHBox->AddChildToHorizontalBox(MapCellWidget);
+	}
 }
 
 /*void UMainMenuWidget::ShowMessageInGame(FString Message, FColor Color)
