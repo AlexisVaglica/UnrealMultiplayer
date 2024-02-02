@@ -89,12 +89,18 @@ void UMainMenuWidget::MapSelected(FString MapSelectedName)
 {
 	CurrentMapSelectedName = MapSelectedName;
 
+	for (auto MapCell : AllMapSelectorCells) 
+	{
+		if (!MapCell->CompareMapName(CurrentMapSelectedName)) 
+		{
+			MapCell->DeselectCell();
+		}
+	}
+
 	if (BtnLaunch)
 	{
 		BtnLaunch->SetIsEnabled(CurrentMapSelectedName != "");
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("MapSelected"));
 }
 
 void UMainMenuWidget::MenuDismiss()
@@ -193,6 +199,8 @@ void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage,
 		MapCellWidget->ConfigureCell(MapName, MapImage);
 		MapCellWidget->OnMapButtonPressed.BindUObject(this, &ThisClass::MapSelected);
 		MapSelectorHBox->AddChildToHorizontalBox(MapCellWidget);
+
+		AllMapSelectorCells.Add(MapCellWidget);
 	}
 }
 

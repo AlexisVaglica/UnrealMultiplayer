@@ -75,6 +75,9 @@ private:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UHorizontalBox* MapSelectorHBox;
 
+	UPROPERTY()
+	TArray<UMapSelectorCell*> AllMapSelectorCells;
+
 	FString CurrentMapSelectedName{""};
 
 public:

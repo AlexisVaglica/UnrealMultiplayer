@@ -9,6 +9,7 @@
 class UButton;
 class UTextBlock;
 class UImage;
+class UBorder;
 
 DECLARE_DELEGATE_OneParam(FOnMapSelected, FString);
 
@@ -33,9 +34,17 @@ private:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UImage* ImageMap;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	UBorder* BGBorder;
+
+	FString CurrentMapName;
+
 public:
 	void ConfigureCell(FString MapName, UTexture2D* MapImage);
+	void DeselectCell();
+	bool CompareMapName(FString MapName);
 
 private:
-	void SelectMapButtonPressed();
+	UFUNCTION()
+	void SelectMapBtnClicked();
 };
