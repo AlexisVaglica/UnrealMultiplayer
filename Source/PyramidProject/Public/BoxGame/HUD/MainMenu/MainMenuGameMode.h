@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "MainMenuGameMode.generated.h"
 
 class UMainMenuWidget;
 class UMultiplayerDataAsset;
 class UMapSelectorCell;
+class UMultiplayerSessionSubsystem;
 
 /**
  * 
@@ -19,6 +21,9 @@ class PYRAMIDPROJECT_API AMainMenuGameMode : public AGameMode
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY(EditAnywhere)
+	int32 MaxGamesSearchCount{ 200 };
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UWorld> LobbyMap;
 
@@ -34,13 +39,22 @@ private:
 	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
+	UPROPERTY(EditAnywhere)
+	UMultiplayerSessionSubsystem* MultiplayerSession;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	void ConfigureMainMenuWidget();
+	void ConfigureOnlineSubsystem();
 	void LaunchHostGame();
 	void LaunchSoloGame(FString MapName);
+	void RefreshGameList();
 	void QuitGame();
 
+	void ShowErrorMessage(FString ErrorMessage);
+
+	UFUNCTION()
+	void CreateSessionComplete(bool bWasSuccessful);
 };

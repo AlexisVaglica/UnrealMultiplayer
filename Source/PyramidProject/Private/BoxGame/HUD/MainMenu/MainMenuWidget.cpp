@@ -111,6 +111,7 @@ void UMainMenuWidget::MenuDismiss()
 	OnConnectionButtonPressed.Unbind();
 	OnJoinButtonPressed.Unbind();
 	OnLaunchButtonPressed.Unbind();
+	OnRefreshButtonPressed.Unbind();
 
 	OnMenuDismissButtonPressed.ExecuteIfBound();
 	OnMenuDismissButtonPressed.Unbind();
@@ -179,6 +180,11 @@ void UMainMenuWidget::BackBtnClicked()
 	ChangeSearchVisibility(false);
 }
 
+void UMainMenuWidget::RefreshBtnClicked() 
+{
+	OnRefreshButtonPressed.ExecuteIfBound();
+}
+
 TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
 {
 	return TakeWidget();
@@ -209,6 +215,11 @@ void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage,
 
 		AllMapSelectorCells.Add(MapCellWidget);
 	}
+}
+
+void UMainMenuWidget::CreateGameSearchCell(FString GameMapName, int32 CurrentPlayersCount)
+{
+	//Create Game Search Cell
 }
 
 /*void UMainMenuWidget::ShowMessageInGame(FString Message, FColor Color)

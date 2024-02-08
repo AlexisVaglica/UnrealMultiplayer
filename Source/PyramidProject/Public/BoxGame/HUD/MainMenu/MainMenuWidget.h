@@ -28,6 +28,7 @@ public:
 	FOnButtonPressed OnSearchButtonPressed;
 	FOnButtonPressed OnConnectionButtonPressed;
 	FOnButtonPressed OnHostButtonPressed;
+	FOnButtonPressed OnRefreshButtonPressed;
 
 	FOnEnterGameWithMap OnJoinButtonPressed;
 	FOnEnterGameWithMap OnLaunchButtonPressed;
@@ -56,6 +57,9 @@ private:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* BtnJoin;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	UButton* BtnRefresh;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* BtnLaunch;
@@ -118,10 +122,14 @@ private:
 	void LaunchBtnClicked();
 
 	UFUNCTION()
+	void RefreshBtnClicked();
+
+	UFUNCTION()
 	void MapSelected(FString MapSelectedName);
 
 	void MenuDismiss();
 	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
 	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
+	void CreateGameSearchCell(FString GameMapName, int32 CurrentPlayersCount);
 };
