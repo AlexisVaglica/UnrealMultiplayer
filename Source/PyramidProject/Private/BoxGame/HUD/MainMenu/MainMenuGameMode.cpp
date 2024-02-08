@@ -25,9 +25,9 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 		return;
 	}
 
-	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchGame);
+	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchSoloGame);
 	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
-	MainMenuWidget->OnSoloGameButtonPressed.BindUObject(this, &ThisClass::SoloGame);
+	MainMenuWidget->OnHostButtonPressed.BindUObject(this, &ThisClass::LaunchHostGame);
 
 	TMap<FString, UTexture2D*> Maps;
 
@@ -40,13 +40,14 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 	MainMenuWidget->SetMapGame(Maps, MapSelectorCellClass);
 }
 
-void AMainMenuGameMode::LaunchGame(FString MapName)
+void AMainMenuGameMode::LaunchHostGame()
 {
-	//ToDo: Send To Lobby
-	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
+	FString LobbyMapPath = FString::Printf(TEXT("%s?listen"), *LobbyMap.ToSoftObjectPath().ToString());
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName(LobbyMapPath), true);
 }
 
-void AMainMenuGameMode::SoloGame(FString MapName)
+void AMainMenuGameMode::LaunchSoloGame(FString MapName)
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
 }

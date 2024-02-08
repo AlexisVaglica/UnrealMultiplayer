@@ -20,6 +20,9 @@ class PYRAMIDPROJECT_API AMainMenuGameMode : public AGameMode
 	
 private:
 	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorld> LobbyMap;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetClass;
 
 	UPROPERTY(EditAnywhere)
@@ -36,8 +39,8 @@ protected:
 
 private:
 	void ConfigureMainMenuWidget();
-	void LaunchGame(FString MapName);
-	void SoloGame(FString MapName);
+	void LaunchHostGame();
+	void LaunchSoloGame(FString MapName);
 	void QuitGame();
 
 };

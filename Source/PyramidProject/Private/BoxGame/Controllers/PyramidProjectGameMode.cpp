@@ -102,5 +102,10 @@ AActor* APyramidProjectGameMode::ChoosePlayerStart_Implementation(AController* P
 void APyramidProjectGameMode::RestartGameplay() 
 {
 	RestartGame();
-	UE_LOG(LogTemp, Warning, TEXT("RestartGameplay"));
+}
+
+void APyramidProjectGameMode::BackMainMenu()
+{
+	FString MainMenuMapPath = *MainMenuMap.ToSoftObjectPath().ToString();
+	UGameplayStatics::OpenLevel(GetWorld(), FName(MainMenuMapPath), true);
 }

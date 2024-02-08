@@ -60,6 +60,7 @@ void APyramidProjectHUD::ConfigureWidget()
 			PlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextPlayerName));
 			NotifyText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextNotifyName));
 			ResetButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonResetName));
+			BackMainMenuButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonMainMenuName));
 
 			VBScoreboard = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(ScoreboardName));
 			VBButtons = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(VerticalBoxName));
@@ -68,9 +69,10 @@ void APyramidProjectHUD::ConfigureWidget()
 			GameoverText->SetVisibility(ESlateVisibility::Hidden);
 			VBButtons->SetVisibility(ESlateVisibility::Hidden);
 
-			if (GetNetMode() == ENetMode::NM_ListenServer)
+			if (IsPlayerAuthority())
 			{
 				ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetButtonPressed);
+				BackMainMenuButton->OnClicked.AddDynamic(this, &ThisClass::BackMainMenuButtonPressed);
 			}
 
 			SetScorePoints(0);
@@ -84,6 +86,11 @@ void APyramidProjectHUD::SetNotify(bool IsVisible, FString NotifyString)
 	NotifyText->SetVisibility(VisibilityType);
 	FText NewNotify = FText::FromString(NotifyString);
 	NotifyText->SetText(NewNotify);
+}
+
+bool APyramidProjectHUD::IsPlayerAuthority()
+{
+	return GetNetMode() == ENetMode::NM_ListenServer || GetNetMode() == ENetMode::NM_Standalone;
 }
 
 void APyramidProjectHUD::DisplayPlayerName()
@@ -118,7 +125,7 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 		GameoverText->SetVisibility(ESlateVisibility::Visible);
 	}
 
-	if (GetNetMode() == ENetMode::NM_ListenServer) 
+	if (IsPlayerAuthority()) 
 	{
 		VBButtons->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -177,5 +184,17 @@ void APyramidProjectHUD::ResetButtonPressed_Implementation()
 	if (CurrentGameMode) 
 	{
 		CurrentGameMode->RestartGameplay();
+	}
+}
+
+void APyramidProjectHUD::BackMainMenuButtonPressed_Implementation()
+{
+	VBButtons->SetVisibility(ESlateVisibility::Hidden);
+	SetNotify(true, BackToMainMenuNotify);
+	
+	APyramidProjectGameMode* CurrentGameMode = Cast<APyramidProjectGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (CurrentGameMode)
+	{
+		CurrentGameMode->BackMainMenu();
 	}
 }

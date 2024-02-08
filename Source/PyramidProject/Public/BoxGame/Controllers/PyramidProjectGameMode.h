@@ -20,10 +20,14 @@ class APyramidProjectGameMode : public AGameMode
 public:
 	APyramidProjectGameMode();
 	void RestartGameplay();
+	void BackMainMenu();
 
 protected:
 	int PlayerStartIndex = 1;
 	TArray<class APlayerController*> PlayerList;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorld> MainMenuMap;
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<APyramidManager> PyramidSpawnerClass;

@@ -25,6 +25,7 @@ private:
 	UTextBlock* PlayerNameText;
 	UTextBlock* NotifyText;
 	UButton* ResetButton;
+	UButton* BackMainMenuButton;
 	UVerticalBox* VBButtons;
 	UVerticalBox* VBScoreboard;
 
@@ -43,11 +44,13 @@ private:
 	const FName TextPlayerName{ FName(TEXT("TxtBox_PlayerName")) };
 	const FName TextNotifyName{ FName(TEXT("TxtBox_Notify")) };
 	const FName ButtonResetName{ FName(TEXT("Btn_Reset")) };
+	const FName ButtonMainMenuName{ FName(TEXT("Btn_Menu")) };
 	const FName VerticalBoxName{ FName(TEXT("VB_Buttons")) };
 	const FName ScoreboardName{ FName(TEXT("VB_Player_List")) };
 
 	const FString WaitNotify{ TEXT("Waiting for the Host...") };
 	const FString RestartingNotify{ TEXT("Restarting...") };
+	const FString BackToMainMenuNotify{ TEXT("Backing Back To Main Menu...") };
 
 protected:
 	UUserWidget* UserWidget;
@@ -70,7 +73,12 @@ private:
 
 	void SetNotify(bool IsVisible, FString NotifyString);
 
+	bool IsPlayerAuthority();
+
 	UFUNCTION(Server, Reliable)
 	void ResetButtonPressed();
+
+	UFUNCTION(Server, Reliable)
+	void BackMainMenuButtonPressed();
 };
 

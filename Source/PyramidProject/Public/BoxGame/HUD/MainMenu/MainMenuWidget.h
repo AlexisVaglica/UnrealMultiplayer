@@ -27,9 +27,9 @@ public:
 	FOnButtonPressed OnExitGameButtonPressed;
 	FOnButtonPressed OnSearchButtonPressed;
 	FOnButtonPressed OnConnectionButtonPressed;
+	FOnButtonPressed OnHostButtonPressed;
 
 	FOnEnterGameWithMap OnJoinButtonPressed;
-	FOnEnterGameWithMap OnSoloGameButtonPressed;
 	FOnEnterGameWithMap OnLaunchButtonPressed;
 
 private:
@@ -121,6 +121,7 @@ private:
 	void MapSelected(FString MapSelectedName);
 
 	void MenuDismiss();
-	void ChangeMapAndSearchVisibility(bool IsHostPressed, bool IsSearchPressed);
+	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
+	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
 };
