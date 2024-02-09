@@ -8,9 +8,12 @@
 #include "MainMenuGameMode.generated.h"
 
 class UMainMenuWidget;
-class UMultiplayerDataAsset;
+class UMapDataAsset;
 class UMapSelectorCell;
+class USessionSearchCell;
 class UMultiplayerSessionSubsystem;
+class UMultiplayerDataAsset;
+class FOnlineSessionSearchResult;
 
 /**
  * 
@@ -31,15 +34,21 @@ private:
 	TSubclassOf<UMainMenuWidget> MainMenuWidgetClass;
 
 	UPROPERTY(EditAnywhere)
-	TArray<UMultiplayerDataAsset*> MultiplayerMapData;
+	UMultiplayerDataAsset* MultiplayerData;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UMapDataAsset*> MapData;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USessionSearchCell> SessionSearchCellClass;
+
 	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	UMultiplayerSessionSubsystem* MultiplayerSession;
 
 protected:
@@ -51,10 +60,14 @@ private:
 	void LaunchHostGame();
 	void LaunchSoloGame(FString MapName);
 	void RefreshGameList();
+	void JoinSessionGame(FString SessionId);
 	void QuitGame();
 
 	void ShowErrorMessage(FString ErrorMessage);
 
 	UFUNCTION()
 	void CreateSessionComplete(bool bWasSuccessful);
+
+	UFUNCTION()
+	void FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess);
 };

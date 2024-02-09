@@ -81,11 +81,11 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult)
 	if (!bWasSuccess) 
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegateHandle);
-		MultiplayerOnFindSessionComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+		MultiplayerOnFindSessionComplete.Broadcast(TArray<FString>(), false);
 	}
 }
 
-void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult& SessionResult)
+void UMultiplayerSessionSubsystem::JoinSession(const FString& SessionResultId)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -96,6 +96,16 @@ void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult&
 	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
 
 	ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+
+	FOnlineSessionSearchResult SessionResult;
+
+	for ( FOnlineSessionSearchResult PossibleSessionResult : LastSessionSearch->SearchResults) 
+	{
+		if (SessionResultId == PossibleSessionResult.GetSessionIdStr())
+		{
+			SessionResult = PossibleSessionResult;
+		}
+	}
 
 	bool bWasSuccess = SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), GameSessionName, SessionResult);
 
@@ -160,13 +170,21 @@ void UMultiplayerSessionSubsystem::FindSessionComplete(bool bWasSuccess)
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegateHandle);
 	}
 
-	if (LastSessionSearch->SearchResults.Num() < 0) 
+	if (LastSessionSearch->SearchResults.Num() <= 0) 
 	{
-		MultiplayerOnFindSessionComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
+		MultiplayerOnFindSessionComplete.Broadcast(TArray<FString>(), false);
 		return;
 	}
 
-	MultiplayerOnFindSessionComplete.Broadcast(LastSessionSearch->SearchResults, bWasSuccess);
+	TArray<FString> SearchIdResults;
+	
+	for (int i = 0; i < LastSessionSearch->SearchResults.Num(); i++)
+	{
+		FString SessionResultId = LastSessionSearch->SearchResults[i].GetSessionIdStr();
+		SearchIdResults.Add(SessionResultId);
+	}
+
+	MultiplayerOnFindSessionComplete.Broadcast(SearchIdResults, bWasSuccess);
 }
 
 void UMultiplayerSessionSubsystem::JoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)

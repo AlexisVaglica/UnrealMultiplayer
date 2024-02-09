@@ -3,9 +3,9 @@
 
 #include "BoxGame/HUD/Lobby/LobbyGameMode.h"
 #include "BoxGame/HUD/Lobby/LobbyWidget.h"
+#include "BoxGame/DataAssets/MapDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "MultiplayerSession/Public/Multiplayer/GameData/MultiplayerDataAsset.h"
 
 void ALobbyGameMode::BeginPlay()
 {
@@ -30,7 +30,7 @@ void ALobbyGameMode::ConfigureLobbyWidget()
 
 	TMap<FString, UTexture2D*> Maps;
 
-	for (UMultiplayerDataAsset* DataAsset : MultiplayerMapData)
+	for (UMapDataAsset* DataAsset : MapDataAssets)
 	{
 		TTuple<FString, UTexture2D*> Map = TTuple<FString, UTexture2D*>(DataAsset->GameMapName.ToString(), DataAsset->MapImage.Get());
 		Maps.Add(Map);

@@ -3,10 +3,11 @@
 
 #include "BoxGame/HUD/MainMenu/MainMenuGameMode.h"
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
+#include "BoxGame/DataAssets/MapDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
-#include "MultiplayerSession/Public/Multiplayer/GameData/MultiplayerDataAsset.h"
+#include "OnlineSessionSettings.h" 
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -32,10 +33,11 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 	MainMenuWidget->OnHostButtonPressed.BindUObject(this, &ThisClass::LaunchHostGame);
 	MainMenuWidget->OnRefreshButtonPressed.BindUObject(this, &ThisClass::RefreshGameList);
 	MainMenuWidget->OnSearchButtonPressed.BindUObject(this, &ThisClass::RefreshGameList);
+	MainMenuWidget->OnJoinButtonPressed.BindUObject(this, &ThisClass::JoinSessionGame);
 
 	TMap<FString, UTexture2D*> Maps;
 
-	for (UMultiplayerDataAsset* DataAsset : MultiplayerMapData)
+	for (UMapDataAsset* DataAsset : MapData)
 	{
 		TTuple<FString, UTexture2D*> Map = TTuple<FString, UTexture2D*>(DataAsset->GameMapName.ToString(), DataAsset->MapImage.Get());
 		Maps.Add(Map);
@@ -46,9 +48,17 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 
 void AMainMenuGameMode::ConfigureOnlineSubsystem()
 {
-	if (MultiplayerSession) 
+	UGameInstance* GameInstance = GetGameInstance();
+
+	if (GameInstance)
 	{
-		MultiplayerSession->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::CreateSessionComplete);
+		MultiplayerSession = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
+
+		if (MultiplayerSession)
+		{
+			MultiplayerSession->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::CreateSessionComplete);
+			MultiplayerSession->MultiplayerOnFindSessionComplete.AddUObject(this, &ThisClass::FindSessionsComplete);
+		}
 	}
 }
 
@@ -59,17 +69,23 @@ void AMainMenuGameMode::LaunchSoloGame(FString MapName)
 
 void AMainMenuGameMode::LaunchHostGame()
 {
-	//ToDo: Create Session 
-	if (MultiplayerSession) 
+	if (MultiplayerSession && MultiplayerData)
 	{
-		UMultiplayerDataAsset* DataAsset = MultiplayerMapData[0];
-		MultiplayerSession->CreateSession(DataAsset);
+		MultiplayerSession->CreateSession(MultiplayerData);
 	}
 }
 
 void AMainMenuGameMode::RefreshGameList() 
 {
 	MultiplayerSession->FindSessions(MaxGamesSearchCount);
+}
+
+void AMainMenuGameMode::JoinSessionGame(FString SessionId)
+{
+	if (MultiplayerSession) 
+	{
+		MultiplayerSession->JoinSession(SessionId);
+	}
 }
 
 void AMainMenuGameMode::QuitGame()
@@ -94,4 +110,9 @@ void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
 		UE_LOG(LogTemp, Warning, TEXT("ERROR - CreateSessionComplete"));
 		ShowErrorMessage(TEXT("Error to Create Session"));
 	}
+}
+
+void AMainMenuGameMode::FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess)
+{
+	MainMenuWidget->SetSessionResults(SessionIdResults, SessionSearchCellClass);
 }

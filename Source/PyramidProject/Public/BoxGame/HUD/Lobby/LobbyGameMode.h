@@ -7,7 +7,7 @@
 #include "LobbyGameMode.generated.h"
 
 class ULobbyWidget;
-class UMultiplayerDataAsset;
+class UMapDataAsset;
 class UMapSelectorCell;
 
 /**
@@ -23,7 +23,7 @@ private:
 	TSubclassOf<ULobbyWidget> LobbyWidgetClass;
 
 	UPROPERTY(EditAnywhere)
-	TArray<UMultiplayerDataAsset*> MultiplayerMapData;
+	TArray<UMapDataAsset*> MapDataAssets;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;

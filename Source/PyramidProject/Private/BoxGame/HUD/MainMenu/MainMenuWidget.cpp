@@ -3,10 +3,12 @@
 
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
 #include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
+#include "BoxGame/HUD/MainMenu/SessionSearchCell.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/HorizontalBox.h"
+#include "Components/VerticalBox.h"
 #include "Components/CanvasPanelSlot.h"
 
 
@@ -52,11 +54,6 @@ bool UMainMenuWidget::Initialize()
 		BtnBack->OnClicked.AddDynamic(this, &ThisClass::BackBtnClicked);
 	}
 
-	if (BtnJoin)
-	{
-		BtnJoin->OnClicked.AddDynamic(this, &ThisClass::JoinBtnClicked);
-	}
-
 	if (BtnLaunch) 
 	{
 		BtnLaunch->OnClicked.AddDynamic(this, &ThisClass::LaunchBtnClicked);
@@ -69,12 +66,6 @@ bool UMainMenuWidget::Initialize()
 void UMainMenuWidget::HostBtnClicked()
 {
 	OnHostButtonPressed.ExecuteIfBound();
-}
-
-void UMainMenuWidget::JoinBtnClicked()
-{
-	OnJoinButtonPressed.ExecuteIfBound("");
-	//ToDo: Add the connectionSelected
 }
 
 void UMainMenuWidget::LaunchBtnClicked()
@@ -101,6 +92,11 @@ void UMainMenuWidget::MapSelected(FString MapSelectedName)
 	{
 		BtnLaunch->SetIsEnabled(CurrentMapSelectedName != "");
 	}
+}
+
+void UMainMenuWidget::SessionSelected(FString SessionId)
+{
+	OnJoinButtonPressed.ExecuteIfBound(SessionId);
 }
 
 void UMainMenuWidget::MenuDismiss()
@@ -130,6 +126,7 @@ void UMainMenuWidget::ChangeSearchVisibility(bool IsSearchPressed)
 {
 	ESlateVisibility SearchSlateVisibility = IsSearchPressed ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
 	BtnSearch->SetIsEnabled(!IsSearchPressed);
+	BtnRefresh->SetVisibility(SearchSlateVisibility);
 	GameSearchList->SetVisibility(SearchSlateVisibility);
 }
 
@@ -204,6 +201,17 @@ void UMainMenuWidget::SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf
 	}
 }
 
+void UMainMenuWidget::SetSessionResults(TArray<FString> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass)
+{
+	if (SessionResults.Num() > 0)
+	{
+		for (FString SessionId : SessionResults)
+		{
+			CreateSessionResultCell(SessionId, TEXT("PortMap"), 1, SessionCellClass);
+		}
+	}
+}
+
 void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass)
 {
 	if (MapSelectorHBox)
@@ -217,9 +225,17 @@ void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage,
 	}
 }
 
-void UMainMenuWidget::CreateGameSearchCell(FString GameMapName, int32 CurrentPlayersCount)
+void UMainMenuWidget::CreateSessionResultCell(FString SessionId, FString GameMapName, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass)
 {
-	//Create Game Search Cell
+	if (SessionSearchVBox)
+	{
+		USessionSearchCell* SessionCellWidget = CreateWidget<USessionSearchCell>(this, SessionCellClass);
+		SessionCellWidget->ConfigureCell(SessionId, GameMapName, CurrentPlayersCount);
+		SessionCellWidget->OnSessionSelected.BindUObject(this, &ThisClass::MapSelected);
+		SessionSearchVBox->AddChildToVerticalBox(SessionCellWidget);
+
+		AllSessionSearchCells.Add(SessionCellWidget);
+	}
 }
 
 /*void UMainMenuWidget::ShowMessageInGame(FString Message, FColor Color)

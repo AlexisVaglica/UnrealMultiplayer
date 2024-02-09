@@ -9,7 +9,9 @@
 class UButton;
 class UBorder;
 class UHorizontalBox;
+class UVerticalBox;
 class UMapSelectorCell;
+class USessionSearchCell;
 
 DECLARE_DELEGATE(FOnButtonPressed);
 DECLARE_DELEGATE_OneParam(FOnEnterGameWithMap, FString);
@@ -56,9 +58,6 @@ private:
 	UButton* BtnBack;
 
 	UPROPERTY(meta = (BindWidgetOptional))
-	UButton* BtnJoin;
-
-	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* BtnRefresh;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -79,8 +78,14 @@ private:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UHorizontalBox* MapSelectorHBox;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	UVerticalBox* SessionSearchVBox;
+
 	UPROPERTY()
 	TArray<UMapSelectorCell*> AllMapSelectorCells;
+
+	UPROPERTY()
+	TArray<USessionSearchCell*> AllSessionSearchCells;
 
 	FString CurrentMapSelectedName{""};
 
@@ -88,6 +93,7 @@ public:
 	TSharedRef<SWidget, ESPMode::ThreadSafe> GetWidgetPrt();
 
 	void SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass);
+	void SetSessionResults(TArray<FString> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass);
 
 protected:
 	virtual bool Initialize() override;
@@ -116,9 +122,6 @@ private:
 	void HostBtnClicked();
 
 	UFUNCTION()
-	void JoinBtnClicked();
-
-	UFUNCTION()
 	void LaunchBtnClicked();
 
 	UFUNCTION()
@@ -127,9 +130,13 @@ private:
 	UFUNCTION()
 	void MapSelected(FString MapSelectedName);
 
+	UFUNCTION()
+	void SessionSelected(FString SessionId);
+
 	void MenuDismiss();
 	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
 	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
-	void CreateGameSearchCell(FString GameMapName, int32 CurrentPlayersCount);
+	void CreateSessionResultCell(FString SessionId, FString GameMapName, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass);
+	void ShowOrDismissMessage(bool isShowing);
 };

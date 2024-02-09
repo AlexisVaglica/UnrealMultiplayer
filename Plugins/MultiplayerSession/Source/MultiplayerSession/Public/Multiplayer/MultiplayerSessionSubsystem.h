@@ -11,7 +11,7 @@
 * Declaring custom delegates for callbacks
 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionComplete, const TArray<FOnlineSessionSearchResult>& SessionResult, bool bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionComplete, const TArray<FString>& SessionIdResults, bool bWasSuccessful);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, EOnJoinSessionCompleteResult::Type Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);
@@ -42,7 +42,7 @@ public:
 	*/
 	void CreateSession(UMultiplayerDataAsset* DataAsset);
 	void FindSessions(int32 MaxSearchResult);
-	void JoinSession(const FOnlineSessionSearchResult& SessionResult);
+	void JoinSession(const FString& SessionResultId);
 	void DestroySession();
 	void StartSession();
 
