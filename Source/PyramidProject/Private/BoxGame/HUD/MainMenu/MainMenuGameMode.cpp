@@ -58,7 +58,7 @@ void AMainMenuGameMode::ConfigureOnlineSubsystem()
 		{
 			MultiplayerSession->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::CreateSessionComplete);
 			MultiplayerSession->MultiplayerOnFindSessionComplete.AddUObject(this, &ThisClass::FindSessionsComplete);
-			//MultiplayerSession->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::JoinSessionComplete);
+			MultiplayerSession->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::JoinSessionComplete);
 		}
 	}
 }
@@ -126,4 +126,26 @@ void AMainMenuGameMode::FindSessionsComplete(const TArray<FString>& SessionIdRes
 	}
 
 	MainMenuWidget->StopSessionSearch();
+}
+
+void AMainMenuGameMode::JoinSessionComplete(bool bWasSuccessful)
+{
+	MainMenuWidget->ShowOrDismissGeneralMessage(false);
+
+	if (MultiplayerSession && bWasSuccessful) 
+	{
+		FString AddressToTravel = MultiplayerSession->GetResolvedConnectString();
+
+		if (!AddressToTravel.IsEmpty())
+		{
+			APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+			if (PlayerController) 
+			{
+				PlayerController->ClientTravel(AddressToTravel, ETravelType::TRAVEL_Absolute);
+				return;
+			}
+		}
+	}
+
+	ShowErrorMessage(ErrorJoinSessionsMessage);
 }

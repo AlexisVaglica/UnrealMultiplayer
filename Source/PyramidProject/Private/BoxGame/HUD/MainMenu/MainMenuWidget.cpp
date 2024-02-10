@@ -304,7 +304,6 @@ void UMainMenuWidget::StartSessionSearch()
 		for (USessionSearchCell* SessionCell : AllSessionSearchCells)
 		{
 			SessionCell->RemoveFromParent();
-			SessionCell->RemoveFromViewport();
 			SessionCell->RemoveFromRoot();
 		}
 

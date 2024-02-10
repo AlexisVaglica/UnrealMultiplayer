@@ -51,6 +51,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Error Message")
 	FString ErrorFindSessionsMessage{ TEXT("Error Finding Sessions") };
 
+	UPROPERTY(EditAnywhere, Category = "Error Message")
+	FString ErrorJoinSessionsMessage{ TEXT("Error Joining Sessions") };
+
 	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
