@@ -58,6 +58,7 @@ void AMainMenuGameMode::ConfigureOnlineSubsystem()
 		{
 			MultiplayerSession->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::CreateSessionComplete);
 			MultiplayerSession->MultiplayerOnFindSessionComplete.AddUObject(this, &ThisClass::FindSessionsComplete);
+			//MultiplayerSession->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::JoinSessionComplete);
 		}
 	}
 }
@@ -78,6 +79,7 @@ void AMainMenuGameMode::LaunchHostGame()
 void AMainMenuGameMode::RefreshGameList() 
 {
 	MultiplayerSession->FindSessions(MaxGamesSearchCount);
+	MainMenuWidget->StartSessionSearch();
 }
 
 void AMainMenuGameMode::JoinSessionGame(FString SessionId)
@@ -85,6 +87,7 @@ void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 	if (MultiplayerSession) 
 	{
 		MultiplayerSession->JoinSession(SessionId);
+		MainMenuWidget->ShowOrDismissGeneralMessage(true, TEXT("Connecting to Session Host..."), false);
 	}
 }
 
@@ -95,7 +98,7 @@ void AMainMenuGameMode::QuitGame()
 
 void AMainMenuGameMode::ShowErrorMessage(FString ErrorMessage)
 {
-	//ToDo: Show Error Message in Widget
+	MainMenuWidget->ShowOrDismissGeneralMessage(true, ErrorMessage);
 }
 
 void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
@@ -107,12 +110,20 @@ void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ERROR - CreateSessionComplete"));
-		ShowErrorMessage(TEXT("Error to Create Session"));
+		ShowErrorMessage(ErrorCreateSessionMessage);
 	}
 }
 
 void AMainMenuGameMode::FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess)
 {
-	MainMenuWidget->SetSessionResults(SessionIdResults, SessionSearchCellClass);
+	if (bWasSuccess)
+	{
+		MainMenuWidget->SetSessionResults(SessionIdResults, SessionSearchCellClass);
+	}
+	else
+	{
+		ShowErrorMessage(ErrorFindSessionsMessage);
+	}
+
+	MainMenuWidget->StopSessionSearch();
 }

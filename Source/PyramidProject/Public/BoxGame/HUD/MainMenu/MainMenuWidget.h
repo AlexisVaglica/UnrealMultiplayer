@@ -12,6 +12,9 @@ class UHorizontalBox;
 class UVerticalBox;
 class UMapSelectorCell;
 class USessionSearchCell;
+class UOverlay;
+class UTextBlock;
+class UCircularThrobber;
 
 DECLARE_DELEGATE(FOnButtonPressed);
 DECLARE_DELEGATE_OneParam(FOnEnterGameWithMap, FString);
@@ -36,6 +39,12 @@ public:
 	FOnEnterGameWithMap OnLaunchButtonPressed;
 
 private:
+	UPROPERTY(meta = (BindWidgetOptional))
+	UTextBlock* TextGeneralMessage;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	UTextBlock* CurrentSessionText;
+
 	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* BtnSoloGame;
 
@@ -64,6 +73,9 @@ private:
 	UButton* BtnLaunch;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UButton* BtnGeneralMessage;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UBorder* MainMenuPanel;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -81,6 +93,12 @@ private:
 	UPROPERTY(meta = (BindWidgetOptional))
 	UVerticalBox* SessionSearchVBox;
 
+	UPROPERTY(meta = (BindWidgetOptional))
+	UOverlay* GeneralMessageOverlay;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	UCircularThrobber* SessionSearchLoader;
+
 	UPROPERTY()
 	TArray<UMapSelectorCell*> AllMapSelectorCells;
 
@@ -89,11 +107,16 @@ private:
 
 	FString CurrentMapSelectedName{""};
 
+	const FString CreatingHostText{ "Creating New Game Host..." };
+
 public:
 	TSharedRef<SWidget, ESPMode::ThreadSafe> GetWidgetPrt();
 
 	void SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass);
 	void SetSessionResults(TArray<FString> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass);
+	void ShowOrDismissGeneralMessage(bool IsShowing, FString NewText = TEXT("Waiting..."), bool IsButtonShowing = true);
+	void StartSessionSearch();
+	void StopSessionSearch();
 
 protected:
 	virtual bool Initialize() override;
@@ -128,6 +151,9 @@ private:
 	void RefreshBtnClicked();
 
 	UFUNCTION()
+	void GeneralMessageConfirmBtnClicked();
+
+	UFUNCTION()
 	void MapSelected(FString MapSelectedName);
 
 	UFUNCTION()
@@ -137,6 +163,5 @@ private:
 	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
 	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
-	void CreateSessionResultCell(FString SessionId, FString GameMapName, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass);
-	void ShowOrDismissMessage(bool isShowing);
+	void CreateSessionResultCell(FString SessionId, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass);
 };

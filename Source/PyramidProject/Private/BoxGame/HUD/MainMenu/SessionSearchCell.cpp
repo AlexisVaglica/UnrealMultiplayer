@@ -5,7 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
-void USessionSearchCell::ConfigureCell(FString Id, FString MapName, int32 CurrentPlayersInSession)
+void USessionSearchCell::ConfigureCell(FString Id, int32 CurrentPlayersInSession)
 {
 	CurrentSessionId = Id;
 
@@ -17,13 +17,13 @@ void USessionSearchCell::ConfigureCell(FString Id, FString MapName, int32 Curren
 
 	if (TextMapName)
 	{
-		FText MapNameText = FText::FromString(MapName);
+		FText MapNameText = FText::FromString(Id);
 		TextMapName->SetText(MapNameText);
 	}
 
 	if (TextPlayers) 
 	{
-		FString PlayersCurrent = FString::Printf(TEXT("Players In Session: %s / 4"), CurrentPlayersInSession);
+		FString PlayersCurrent = FString::Printf(TEXT("Players In Session: %d / 4"), CurrentPlayersInSession);
 		FText PlayersText = FText::FromString(PlayersCurrent);
 		TextPlayers->SetText(PlayersText);
 	}

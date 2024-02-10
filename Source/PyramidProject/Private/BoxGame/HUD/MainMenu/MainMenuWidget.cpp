@@ -10,7 +10,8 @@
 #include "Components/HorizontalBox.h"
 #include "Components/VerticalBox.h"
 #include "Components/CanvasPanelSlot.h"
-
+#include "Components/Overlay.h"
+#include "Components/CircularThrobber.h"
 
 bool UMainMenuWidget::Initialize()
 {
@@ -60,11 +61,25 @@ bool UMainMenuWidget::Initialize()
 		BtnLaunch->SetIsEnabled(false);
 	}
 
+	if (BtnRefresh) 
+	{
+		BtnRefresh->OnClicked.AddDynamic(this, &ThisClass::RefreshBtnClicked);
+	}
+
+	if (BtnGeneralMessage) 
+	{
+		BtnGeneralMessage->OnClicked.AddDynamic(this, &ThisClass::GeneralMessageConfirmBtnClicked);
+		ShowOrDismissGeneralMessage(false);
+	}
+
 	return true;
 }
 
 void UMainMenuWidget::HostBtnClicked()
 {
+	BtnHost->SetIsEnabled(false);
+	ShowOrDismissGeneralMessage(true, CreatingHostText, false);
+
 	OnHostButtonPressed.ExecuteIfBound();
 }
 
@@ -158,7 +173,6 @@ void UMainMenuWidget::QuitGameBtnClicked()
 void UMainMenuWidget::SearchBtnClicked()
 {
 	ChangeSearchVisibility(true);
-
 	OnSearchButtonPressed.ExecuteIfBound();
 }
 
@@ -180,6 +194,11 @@ void UMainMenuWidget::BackBtnClicked()
 void UMainMenuWidget::RefreshBtnClicked() 
 {
 	OnRefreshButtonPressed.ExecuteIfBound();
+}
+
+void UMainMenuWidget::GeneralMessageConfirmBtnClicked()
+{
+	ShowOrDismissGeneralMessage(false);
 }
 
 TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
@@ -207,8 +226,12 @@ void UMainMenuWidget::SetSessionResults(TArray<FString> SessionResults, TSubclas
 	{
 		for (FString SessionId : SessionResults)
 		{
-			CreateSessionResultCell(SessionId, TEXT("PortMap"), 1, SessionCellClass);
+			CreateSessionResultCell(SessionId, 1, SessionCellClass);
 		}
+	}
+	else
+	{
+		CurrentSessionText->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -225,28 +248,79 @@ void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage,
 	}
 }
 
-void UMainMenuWidget::CreateSessionResultCell(FString SessionId, FString GameMapName, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass)
+void UMainMenuWidget::CreateSessionResultCell(FString SessionId, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass)
 {
 	if (SessionSearchVBox)
 	{
 		USessionSearchCell* SessionCellWidget = CreateWidget<USessionSearchCell>(this, SessionCellClass);
-		SessionCellWidget->ConfigureCell(SessionId, GameMapName, CurrentPlayersCount);
-		SessionCellWidget->OnSessionSelected.BindUObject(this, &ThisClass::MapSelected);
+		SessionCellWidget->ConfigureCell(SessionId, CurrentPlayersCount);
+		SessionCellWidget->OnSessionSelected.BindUObject(this, &ThisClass::SessionSelected);
 		SessionSearchVBox->AddChildToVerticalBox(SessionCellWidget);
 
 		AllSessionSearchCells.Add(SessionCellWidget);
 	}
 }
 
-/*void UMainMenuWidget::ShowMessageInGame(FString Message, FColor Color)
+void UMainMenuWidget::ShowOrDismissGeneralMessage(bool IsShowing, FString NewText, bool IsButtonShowing)
 {
-	if (GEngine)
+	if(GeneralMessageOverlay) 
 	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			Color,
-			Message
-		);
+		ESlateVisibility MessageOverlayVisibility = IsShowing ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+		GeneralMessageOverlay->SetVisibility(MessageOverlayVisibility);
+
+		if (TextGeneralMessage) 
+		{
+			FText TextToShow = FText::FromString(NewText);
+			TextGeneralMessage->SetText(TextToShow);
+		}
+
+		if (BtnGeneralMessage) 
+		{
+			ESlateVisibility BtnVisibility = IsButtonShowing ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+			BtnGeneralMessage->SetVisibility(BtnVisibility);
+		}
 	}
-}*/
+}
+
+void UMainMenuWidget::StartSessionSearch()
+{
+	if (CurrentSessionText)
+	{
+		CurrentSessionText->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (BtnRefresh) 
+	{
+		BtnRefresh->SetIsEnabled(false);
+	}
+
+	if (SessionSearchLoader) 
+	{
+		SessionSearchLoader->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (AllSessionSearchCells.Num() > 0)
+	{
+		for (USessionSearchCell* SessionCell : AllSessionSearchCells)
+		{
+			SessionCell->RemoveFromParent();
+			SessionCell->RemoveFromViewport();
+			SessionCell->RemoveFromRoot();
+		}
+
+		AllSessionSearchCells.Empty();
+	}
+}
+
+void UMainMenuWidget::StopSessionSearch()
+{
+	if (BtnRefresh)
+	{
+		BtnRefresh->SetIsEnabled(true);
+	}
+
+	if (SessionSearchLoader)
+	{
+		SessionSearchLoader->SetVisibility(ESlateVisibility::Hidden);
+	}
+}

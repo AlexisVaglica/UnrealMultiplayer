@@ -45,6 +45,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USessionSearchCell> SessionSearchCellClass;
 
+	UPROPERTY(EditAnywhere, Category="Error Message")
+	FString ErrorCreateSessionMessage{ TEXT("Error to Create a Session") };
+
+	UPROPERTY(EditAnywhere, Category = "Error Message")
+	FString ErrorFindSessionsMessage{ TEXT("Error Finding Sessions") };
+
 	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
@@ -70,4 +76,7 @@ private:
 
 	UFUNCTION()
 	void FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess);
+
+	UFUNCTION()
+	void JoinSessionComplete(bool bWasSuccessful);
 };

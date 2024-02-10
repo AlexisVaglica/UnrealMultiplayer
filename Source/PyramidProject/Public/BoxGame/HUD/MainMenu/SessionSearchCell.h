@@ -38,8 +38,10 @@ private:
 	FString CurrentSessionId{ "" };
 
 public:
-	void ConfigureCell(FString Id, FString MapName, int32 CurrentPlayersInSession);
+	UFUNCTION()
+	void ConfigureCell(FString Id, int32 CurrentPlayersInSession);
 
 private:
+	UFUNCTION()
 	void JoinSessionButtonClicked();
 };
