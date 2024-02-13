@@ -78,7 +78,6 @@ bool UMainMenuWidget::Initialize()
 void UMainMenuWidget::HostBtnClicked()
 {
 	BtnHost->SetIsEnabled(false);
-	ShowOrDismissGeneralMessage(true, CreatingHostText, false);
 
 	OnHostButtonPressed.ExecuteIfBound();
 }

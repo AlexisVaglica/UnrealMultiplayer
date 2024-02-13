@@ -105,8 +105,14 @@ void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
 {
 	if (bWasSuccessful) 
 	{
-		FString LobbyMapPath = FString::Printf(TEXT("%s?listen"), *LobbyMap.ToSoftObjectPath().ToString());
-		UGameplayStatics::OpenLevel(GetWorld(), FName(LobbyMapPath), true);
+		FString LobbyMapPath = FString::Printf(TEXT("%s?listen"), *LobbyMap.GetLongPackageName());
+
+		UWorld* World = GetWorld();
+
+		if (World) 
+		{
+			World->ServerTravel(LobbyMapPath);
+		}
 	}
 	else
 	{

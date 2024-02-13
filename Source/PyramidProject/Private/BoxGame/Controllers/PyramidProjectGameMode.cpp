@@ -3,11 +3,12 @@
 #include "BoxGame/Controllers/PyramidProjectGameMode.h"
 #include "BoxGame/HUD/PyramidProjectHUD.h"
 #include "BoxGame/Character/PyramidProjectCharacter.h"
-#include "Kismet/GameplayStatics.h"
-#include "UObject/ConstructorHelpers.h"
 #include "BoxGame/Manager/PyramidManager.h"
 #include "BoxGame/Controllers/PyramidPlayerState.h"
 #include "BoxGame/Controllers/PyramidPlayerController.h"
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 
 APyramidProjectGameMode::APyramidProjectGameMode()
 	: Super()
@@ -31,6 +32,29 @@ void APyramidProjectGameMode::BeginPlay() {
 		PyramidManager->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
 		PyramidManager->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
 	}
+
+	ConfigureOnlineSubsystem();
+}
+
+void APyramidProjectGameMode::ConfigureOnlineSubsystem()
+{
+	UGameInstance* GameInstance = GetGameInstance();
+
+	if (GameInstance)
+	{
+		MultiplayerSession = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
+
+		if (MultiplayerSession)
+		{
+			MultiplayerSession->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::DestroySessionComplete);
+		}
+	}
+}
+
+void APyramidProjectGameMode::DestroySessionComplete(bool bWasSuccessful)
+{
+	FString MainMenuMapPath = FString::Printf(TEXT("%s?closed"), *MainMenuMap.GetLongPackageName());
+	UGameplayStatics::OpenLevel(GetWorld(), FName(MainMenuMapPath), true);
 }
 
 void APyramidProjectGameMode::ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer)
@@ -91,6 +115,19 @@ void APyramidProjectGameMode::PostLogin(APlayerController* NewPlayer)
 	PlayerList.Add(NewPlayer);
 }
 
+void APyramidProjectGameMode::RestartGameplay() 
+{
+	RestartGame();
+}
+
+void APyramidProjectGameMode::BackMainMenu()
+{
+	if (MultiplayerSession)
+	{
+		MultiplayerSession->DestroySession();
+	}
+}
+
 AActor* APyramidProjectGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
 	FString PlayerTag = "Player";
@@ -99,13 +136,3 @@ AActor* APyramidProjectGameMode::ChoosePlayerStart_Implementation(AController* P
 	return FindPlayerStart(Player, PlayerTag);
 }
 
-void APyramidProjectGameMode::RestartGameplay() 
-{
-	RestartGame();
-}
-
-void APyramidProjectGameMode::BackMainMenu()
-{
-	FString MainMenuMapPath = *MainMenuMap.ToSoftObjectPath().ToString();
-	UGameplayStatics::OpenLevel(GetWorld(), FName(MainMenuMapPath), true);
-}

@@ -8,6 +8,7 @@
 
 class APyramidProjectCharacter;
 class APyramidManager;
+class UMultiplayerSessionSubsystem;
 
 UCLASS(minimalapi)
 class APyramidProjectGameMode : public AGameMode
@@ -22,7 +23,7 @@ public:
 	void RestartGameplay();
 	void BackMainMenu();
 
-protected:
+private:
 	int PlayerStartIndex = 1;
 	TArray<class APlayerController*> PlayerList;
 
@@ -30,16 +31,26 @@ protected:
 	TSoftObjectPtr<UWorld> MainMenuMap;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<APyramidManager> PyramidSpawnerClass;
+	TSubclassOf<APyramidManager> PyramidSpawnerClass;
 
 	UPROPERTY()
 	APyramidManager* PyramidManager;
 
+	UPROPERTY()
+	UMultiplayerSessionSubsystem* MultiplayerSession;
+
 protected:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+private:
 	void ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer);
 	void GameOver();
-	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	void ConfigureOnlineSubsystem();
+
+	UFUNCTION()
+	void DestroySessionComplete(bool bWasSuccessful);
+
 };
 
 
