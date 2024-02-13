@@ -46,6 +46,8 @@ public:
 	void DestroySession();
 	void StartSession();
 
+	int32 GetMaxPlayersInSession(FName SessionName);
+
 	FString GetResolvedConnectString();
 
 	/*

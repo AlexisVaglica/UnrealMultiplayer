@@ -153,6 +153,18 @@ void UMultiplayerSessionSubsystem::StartSession()
 	}
 }
 
+int32 UMultiplayerSessionSubsystem::GetMaxPlayersInSession(FName SessionName)
+{
+	auto Session = SessionInterface->GetSessionSettings(SessionName);
+
+	if (Session) 
+	{
+		return Session->NumPublicConnections;
+	}
+
+	return 0;
+}
+
 void UMultiplayerSessionSubsystem::CreateSessionComplete(FName SessionName, bool bWasSuccess)
 {
 	if (SessionInterface) 
@@ -242,6 +254,7 @@ void UMultiplayerSessionSubsystem::ConfigureSessionSettings(UMultiplayerDataAsse
 
 	SessionSettings = MakeShareable(new FOnlineSessionSettings());
 	SessionSettings->NumPublicConnections = DataAsset->MaxPlayersCount;
+	SessionSettings->NumPrivateConnections = DataAsset->MaxPlayersCount;
 	SessionSettings->bIsLANMatch = SubsystemName == NullName;
 	SessionSettings->bIsDedicated = false;
 	SessionSettings->bAllowJoinInProgress = true;

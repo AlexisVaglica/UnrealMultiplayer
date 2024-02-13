@@ -2,51 +2,125 @@
 
 
 #include "BoxGame/HUD/Lobby/LobbyGameMode.h"
-#include "BoxGame/HUD/Lobby/LobbyWidget.h"
-#include "BoxGame/DataAssets/MapDataAsset.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "BoxGame/HUD/Lobby/LobbyPlayerController.h"
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/GameState.h"
+#include "GameFramework/GameSession.h"
 #include "Kismet/GameplayStatics.h"
 
 void ALobbyGameMode::BeginPlay()
 {
-	Super::BeginPlay();
-
-	LobbyWidget = CreateWidget<ULobbyWidget>(GetWorld(), LobbyWidgetClass);
-	LobbyWidget->AddToViewport();
-	LobbyWidget->SetIsFocusable(true);
-
-	ConfigureLobbyWidget();
+	ConfigureOnlineSubsystem();
 }
 
-void ALobbyGameMode::ConfigureLobbyWidget()
+void ALobbyGameMode::ConfigureOnlineSubsystem()
 {
-	if (!LobbyWidget)
+	UGameInstance* GameInstance = GetGameInstance();
+
+	if (GameInstance)
 	{
-		return;
+		MultiplayerSession = GameInstance->GetSubsystem<UMultiplayerSessionSubsystem>();
+
+		if (MultiplayerSession)
+		{
+			MultiplayerSession->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::DestroySessionComplete);
+			MultiplayerSession->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::StartSessionComplete);
+
+			GameInfo.MaxNumberOfPlayerInMatch = MultiplayerSession->GetMaxPlayersInSession(GameSessionName);
+			GameInfo.MinNumberOfPlayerForStartMatch = MinNumberOfPlayerForStartMatch;
+		}
+	}
+}
+
+void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
+
+	if (JoiningPlayer)
+	{
+		ConnectedPlayers.Add(JoiningPlayer);
+	}
+}
+
+void ALobbyGameMode::Logout(AController* ExitingPlayer)
+{
+	Super::Logout(ExitingPlayer);
+
+	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(ExitingPlayer);
+
+	if (LobbyPlayerController)
+	{
+		ConnectedPlayers.Remove(LobbyPlayerController);
+		UpdatePlayerList();
+	}
+}
+
+void ALobbyGameMode::UpdatePlayerList()
+{
+	PlayerInfoArray.Empty();
+
+	for (ALobbyPlayerController* Player : ConnectedPlayers)
+	{
+		FLobbyPlayerInfo TempLobbyPlayerInfo;
+		TempLobbyPlayerInfo.bPlayerReadyState = Player->IsPlayerReady();
+		PlayerInfoArray.Add(TempLobbyPlayerInfo);
 	}
 
-	//LobbyWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchGame);
-	//LobbyWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
-
-	TMap<FString, UTexture2D*> Maps;
-
-	for (UMapDataAsset* DataAsset : MapDataAssets)
+	for (ALobbyPlayerController* Player : ConnectedPlayers) 
 	{
-		TTuple<FString, UTexture2D*> Map = TTuple<FString, UTexture2D*>(DataAsset->GameMapName.ToString(), DataAsset->MapImage.Get());
-		Maps.Add(Map);
+		Player->ClientUpdatePlayerList(PlayerInfoArray, GameInfo);
+	}
+}
+
+void ALobbyGameMode::StartGameFromLobby(FString MapName)
+{
+	MapToTravel = MapName;
+
+	for (auto Player : ConnectedPlayers) 
+	{
+		Player->ClientChangeWidgetToLaunch();
 	}
 
-	//LobbyWidget->SetMapGame(Maps, MapSelectorCellClass);
+	if (MultiplayerSession)
+	{
+		MultiplayerSession->StartSession();
+	}
 }
 
-void ALobbyGameMode::LaunchGame(FString MapName)
+void ALobbyGameMode::ExitGameSession()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
+	if (MultiplayerSession)
+	{
+		MultiplayerSession->DestroySession();
+	}
 }
 
-void ALobbyGameMode::QuitGame()
+bool ALobbyGameMode::IsAllPlayerReady() const
 {
-	//Go To Main Menu
-	//UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
+	for (ALobbyPlayerController* Player : ConnectedPlayers)
+	{
+		if (!Player->IsPlayerReady() || ConnectedPlayers.Num() < GameInfo.MinNumberOfPlayerForStartMatch)
+		{
+			return false;
+		}
+	}
+	return true;
+}
 
+void ALobbyGameMode::PlayerRequestUpdate()
+{
+	UpdatePlayerList();
+}
+
+void ALobbyGameMode::DestroySessionComplete(bool bWasSuccessful)
+{
+	ReturnToMainMenuHost();
+}
+
+void ALobbyGameMode::StartSessionComplete(bool bWasSuccessful)
+{
+	GetWorld()->ServerTravel(MapToTravel);
 }
