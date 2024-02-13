@@ -24,6 +24,7 @@ void ALobbyPlayerController::BeginPlay()
 		if (IsPlayerHost())
 		{
 			LobbyHUD->OnLaunchGameShoot.BindUObject(this, &ThisClass::LaunchGame);
+			LobbyHUD->OnMapWasSelected.BindUObject(this, &ThisClass::RequestServerReplicateMapSelected);
 		}
 
 		LobbyHUD->OnReadyButtonPressed.BindUObject(this, &ThisClass::PlayerChangeReady);
@@ -35,23 +36,6 @@ bool ALobbyPlayerController::IsPlayerHost() const
 {
 	ENetMode NetMode = GetNetMode();
 	return NetMode == ENetMode::NM_ListenServer || NetMode == ENetMode::NM_DedicatedServer;
-}
-
-void ALobbyPlayerController::RequestServerPlayerListUpdate()
-{
-	if (IsPlayerHost())
-	{
-		ALobbyGameMode* GM = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
-
-		if (GM)
-		{
-			GM->PlayerRequestUpdate();
-		}
-	}
-	else
-	{
-		ServerRequestPlayerListUpdate();
-	}
 }
 
 void ALobbyPlayerController::SetIsReadyState(bool NewReadyState)
@@ -114,25 +98,37 @@ void ALobbyPlayerController::CancelGame()
 	}
 }
 
+void ALobbyPlayerController::RequestServerReplicateMapSelected(FString MapName)
+{
+	ALobbyGameMode* GM = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GM)
+	{
+		GM->PlayerRequestReplicateMapSelected(MapName);
+	}
+}
+
+void ALobbyPlayerController::RequestServerPlayerListUpdate()
+{
+	if (IsPlayerHost())
+	{
+		ALobbyGameMode* GM = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+
+		if (GM)
+		{
+			GM->PlayerRequestUpdate();
+		}
+	}
+	else
+	{
+		ServerRequestPlayerListUpdate();
+	}
+}
+
 void ALobbyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ALobbyPlayerController, bIsReady);
-}
-
-void ALobbyPlayerController::ClientUpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray, const struct FLobbyGameInfo& GameInfo)
-{
-	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
-
-	if (LobbyHUD) 
-	{
-		if (IsPlayerHost()) 
-		{
-			LobbyHUD->PlayerCanLaunchGame(CanGameStart());
-		}
-
-		LobbyHUD->UpdatePlayerList(PlayerInfoArray, GameInfo);
-	}
 }
 
 void ALobbyPlayerController::ServerRequestPlayerListUpdate_Implementation()
@@ -145,6 +141,21 @@ void ALobbyPlayerController::ServerSetIsReadyState_Implementation(bool NewReadyS
 	SetIsReadyState(NewReadyState);
 }
 
+void ALobbyPlayerController::ClientUpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray, const struct FLobbyGameInfo& GameInfo)
+{
+	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
+
+	if (LobbyHUD)
+	{
+		if (IsPlayerHost())
+		{
+			LobbyHUD->PlayerCanLaunchGame(CanGameStart());
+		}
+
+		LobbyHUD->UpdatePlayerList(PlayerInfoArray, GameInfo);
+	}
+}
+
 void ALobbyPlayerController::ClientChangeWidgetToLaunch_Implementation()
 {
 	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
@@ -152,5 +163,15 @@ void ALobbyPlayerController::ClientChangeWidgetToLaunch_Implementation()
 	if (LobbyHUD)
 	{
 		LobbyHUD->ChangeWidgetToLaunch();
+	}
+}
+
+void ALobbyPlayerController::ClientChangeMapSelected_Implementation(const FString& MapName)
+{
+	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
+
+	if (LobbyHUD)
+	{
+		LobbyHUD->ChangeMapSelected(MapName);
 	}
 }

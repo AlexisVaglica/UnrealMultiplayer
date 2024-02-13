@@ -11,7 +11,7 @@ class UMapDataAsset;
 class UMapSelectorCell;
 class APlayerController;
 
-DECLARE_DELEGATE_OneParam(FOnLaunchGameShoot, FString);
+DECLARE_DELEGATE_OneParam(FOnButtonOneParamPressed, FString);
 DECLARE_DELEGATE(FOnButtonPressed);
 
 /**
@@ -23,19 +23,20 @@ class PYRAMIDPROJECT_API ALobbyHUD : public AHUD
 	GENERATED_BODY()
 
 public:
-	FOnLaunchGameShoot OnLaunchGameShoot;
 	FOnButtonPressed OnReadyButtonPressed;
 	FOnButtonPressed OnCancelButtonPressed;
+	FOnButtonOneParamPressed OnLaunchGameShoot;
+	FOnButtonOneParamPressed OnMapWasSelected;
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ULobbyWidget> LobbyWidgetClass;
 
 	UPROPERTY(EditAnywhere)
-	TArray<UMapDataAsset*> MapDataAssets;
+	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
+	TArray<UMapDataAsset*> MapsData;
 
 	UPROPERTY()
 	ULobbyWidget* LobbyWidget;
@@ -44,6 +45,7 @@ public:
 	void UpdatePlayerList(const TArray<struct FLobbyPlayerInfo>& NewPlayersInfo, const struct FLobbyGameInfo& GameInfo);
 	void PlayerCanLaunchGame(bool CanLaunch);
 	void ChangeWidgetToLaunch();
+	void ChangeMapSelected(const FString& MapName);
 
 protected:
 	virtual void BeginPlay() override;
@@ -55,4 +57,6 @@ private:
 	void CancelGame();
 	void PlayerPressedReady();
 
+	UFUNCTION()
+	void MapSelected(FString MapName);
 };

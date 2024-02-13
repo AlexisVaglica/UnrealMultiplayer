@@ -29,6 +29,20 @@ void UMapSelectorCell::ConfigureCell(FString MapName, UTexture2D* MapImage)
 	}
 }
 
+void UMapSelectorCell::ConfigureCellOnline(bool IsHost)
+{
+	if (BtnMap) 
+	{
+		ESlateVisibility BtnVisibility = IsHost ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+		BtnMap->SetVisibility(BtnVisibility);
+	}
+}
+
+void UMapSelectorCell::SelectMap() 
+{
+	BGBorder->SetBrushColor(FLinearColor::Red);
+}
+
 void UMapSelectorCell::DeselectCell()
 {
 	BGBorder->SetBrushColor(FLinearColor::Transparent);

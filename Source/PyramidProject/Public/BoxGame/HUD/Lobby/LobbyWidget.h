@@ -9,8 +9,11 @@
 class UTextBlock;
 class UButton;
 class UVerticalBox;
+class UHorizontalBox;
 class ULobbyPlayerCell;
 class UBorder;
+class UMapDataAsset;
+class UMapSelectorCell;
 
 DECLARE_DELEGATE(FOnButtonPressed);
 DECLARE_DELEGATE_OneParam(FOnButtonOneParamPressed, FString);
@@ -27,6 +30,7 @@ public:
 	FOnButtonPressed OnCancelButtonPressed;
 	FOnButtonPressed OnReadyButtonPressed;
 	FOnButtonOneParamPressed OnLaunchButtonPressed;
+	FOnButtonOneParamPressed OnMapButtonPressed;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -51,13 +55,22 @@ private:
 	UVerticalBox* VBPlayerList;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UHorizontalBox* MapSelectorHBox;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UBorder* LaunchGameMessage;
 
 	UPROPERTY()
 	TArray<ULobbyPlayerCell*> AllLobbyPlayerCells;
 
+	UPROPERTY()
+	TArray<UMapSelectorCell*> AllMapSelectorCells;
+
 	bool ButtonInReady{ true };
-	bool ReadyToLaunch{ false };
+	bool MapWasSelected{ false };
+	bool IsLaunchingGame{ false };
+
+	FString CurrentMapSelectedName{ "" };
 
 	const FString ReadyString{ TEXT("Ready") };
 	const FString NotReadyString{ TEXT("Not Ready")};
@@ -67,6 +80,9 @@ public:
 	void SetLaunchButton(bool IsHost, bool IsEnabled);
 	void ChangeButtonsToLaunch();
 
+	void UpdateMaps(TArray<UMapDataAsset*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass, bool IsHost);
+	void ReplicateMapSelected(const FString& MapName);
+
 protected:
 	virtual bool Initialize() override;
 
@@ -74,6 +90,9 @@ private:
 	void ConfigureWidget();
 	void SetNumberOfPlayers(int32 CurrentCount, int32 MaxCount);
 	void CreateLobbyPlayerCell(const FLobbyPlayerInfo PlayerInfo);
+
+	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass, bool IsHost);
+	void MapSelected(FString MapSelectedName);
 
 	UFUNCTION()
 	void CancelButtonClicked();
@@ -83,4 +102,5 @@ private:
 
 	UFUNCTION()
 	void ReadyButtonClicked();
+
 };

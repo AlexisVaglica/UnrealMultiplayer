@@ -4,7 +4,10 @@
 #include "BoxGame/HUD/Lobby/LobbyWidget.h"
 #include "BoxGame/HUD/Lobby/LobbyGameMode.h"
 #include "BoxGame/HUD/Lobby/LobbyPlayerCell.h"
+#include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
+#include "BoxGame/DataAssets/MapDataAsset.h"
 #include "Components/VerticalBox.h"
+#include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
@@ -46,7 +49,7 @@ void ULobbyWidget::CancelButtonClicked()
 
 void ULobbyWidget::LaunchButtonClicked()
 {
-	OnLaunchButtonPressed.ExecuteIfBound("PortMap");
+	OnLaunchButtonPressed.ExecuteIfBound(CurrentMapSelectedName);
 }
 
 void ULobbyWidget::ReadyButtonClicked()
@@ -94,7 +97,7 @@ void ULobbyWidget::SetLaunchButton(bool IsHost, bool IsEnabled)
 	ESlateVisibility ButonVisibility = IsHost ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
 	BtnLaunch->SetVisibility(ButonVisibility);
 
-	bool bBtnLaunchIsEnabled = IsEnabled && !ReadyToLaunch;
+	bool bBtnLaunchIsEnabled = IsEnabled && !IsLaunchingGame && MapWasSelected;
 	BtnLaunch->SetIsEnabled(bBtnLaunchIsEnabled);
 }
 
@@ -112,10 +115,72 @@ void ULobbyWidget::CreateLobbyPlayerCell(const FLobbyPlayerInfo PlayerInfo)
 
 void ULobbyWidget::ChangeButtonsToLaunch()
 {
-	ReadyToLaunch = true;
+	IsLaunchingGame = true;
 
 	LaunchGameMessage->SetVisibility(ESlateVisibility::Visible);
 	BtnLaunch->SetIsEnabled(false);
 	BtnCancel->SetIsEnabled(false);
 	BtnReady->SetIsEnabled(false);
+}
+
+void ULobbyWidget::UpdateMaps(TArray<UMapDataAsset*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass, bool IsHost)
+{
+	if (NewMaps.Num() > 0)
+	{
+		for (auto MapData : NewMaps)
+		{
+			auto MapName = MapData->GameMapName.ToString();
+			auto MapImage = MapData->MapImage.Get();
+			CreateMapSelectCell(MapName, MapImage, MapCellClass, IsHost);
+		}
+	}
+}
+
+void ULobbyWidget::ReplicateMapSelected(const FString& MapName)
+{
+	for (auto MapCell : AllMapSelectorCells)
+	{
+		if (!MapCell->CompareMapName(MapName))
+		{
+			MapCell->DeselectCell();
+		}
+		else
+		{
+			MapCell->SelectMap();
+		}
+	}
+}
+
+void ULobbyWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass, bool IsHost)
+{
+	if (MapSelectorHBox)
+	{
+		UMapSelectorCell* MapCellWidget = CreateWidget<UMapSelectorCell>(this, MapCellClass);
+		MapCellWidget->ConfigureCell(MapName, MapImage);
+		MapCellWidget->ConfigureCellOnline(IsHost);
+
+		if (IsHost) 
+		{
+			MapCellWidget->OnMapButtonPressed.BindUObject(this, &ThisClass::MapSelected);
+		}
+
+		MapSelectorHBox->AddChildToHorizontalBox(MapCellWidget);
+		AllMapSelectorCells.Add(MapCellWidget);
+	}
+}
+
+void ULobbyWidget::MapSelected(FString MapSelectedName)
+{
+	CurrentMapSelectedName = MapSelectedName;
+	MapWasSelected = true;
+
+	for (auto MapCell : AllMapSelectorCells)
+	{
+		if (!MapCell->CompareMapName(CurrentMapSelectedName))
+		{
+			MapCell->DeselectCell();
+		}
+	}
+
+	OnMapButtonPressed.ExecuteIfBound(CurrentMapSelectedName);
 }

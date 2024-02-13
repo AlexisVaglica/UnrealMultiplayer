@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "LobbyPlayerController.generated.h"
 
+class UMapDataAsset;
+
 /**
  * 
  */
@@ -25,6 +27,9 @@ public:
 	UFUNCTION(Client, Unreliable)
 	void ClientChangeWidgetToLaunch();
 
+	UFUNCTION(Client, Unreliable)
+	void ClientChangeMapSelected(const FString& MapName);
+
 	FORCEINLINE bool IsPlayerReady() { return bIsReady; };
 
 protected:
@@ -40,6 +45,7 @@ private:
 	bool IsPlayerHost() const;
 	bool CanGameStart() const;
 
+	void RequestServerReplicateMapSelected(FString MapName);
 	void RequestServerPlayerListUpdate();
 
 	UFUNCTION(Server, Reliable)

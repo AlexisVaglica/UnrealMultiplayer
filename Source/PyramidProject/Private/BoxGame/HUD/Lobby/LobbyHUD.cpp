@@ -27,17 +27,10 @@ void ALobbyHUD::ConfigureLobbyWidget()
 	if (IsPlayerHost())
 	{
 		LobbyWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchGame);
+		LobbyWidget->OnMapButtonPressed.BindUObject(this, &ThisClass::MapSelected);
 	}
 
-	TMap<FString, UTexture2D*> Maps;
-
-	for (UMapDataAsset* DataAsset : MapDataAssets)
-	{
-		TTuple<FString, UTexture2D*> Map = TTuple<FString, UTexture2D*>(DataAsset->GameMapName.ToString(), DataAsset->MapImage.Get());
-		Maps.Add(Map);
-	}
-
-	//LobbyWidget->SetMapGame(Maps, MapSelectorCellClass);
+	LobbyWidget->UpdateMaps(MapsData, MapSelectorCellClass, IsPlayerHost());
 }
 
 bool ALobbyHUD::IsPlayerHost()
@@ -77,4 +70,14 @@ void ALobbyHUD::ChangeWidgetToLaunch()
 	{
 		LobbyWidget->ChangeButtonsToLaunch();
 	}
+}
+
+void ALobbyHUD::ChangeMapSelected(const FString& MapName)
+{
+	LobbyWidget->ReplicateMapSelected(MapName);
+}
+
+void ALobbyHUD::MapSelected(FString MapName)
+{
+	OnMapWasSelected.ExecuteIfBound(MapName);
 }

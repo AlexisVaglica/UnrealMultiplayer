@@ -124,3 +124,11 @@ void ALobbyGameMode::StartSessionComplete(bool bWasSuccessful)
 {
 	GetWorld()->ServerTravel(MapToTravel);
 }
+
+void ALobbyGameMode::PlayerRequestReplicateMapSelected(const FString& MapName) 
+{
+	for (ALobbyPlayerController* Player : ConnectedPlayers)
+	{
+		Player->ClientChangeMapSelected(MapName);
+	}
+}

@@ -41,6 +41,8 @@ private:
 
 public:
 	void ConfigureCell(FString MapName, UTexture2D* MapImage);
+	void ConfigureCellOnline(bool IsHost);
+	void SelectMap();
 	void DeselectCell();
 	bool CompareMapName(FString MapName);
 

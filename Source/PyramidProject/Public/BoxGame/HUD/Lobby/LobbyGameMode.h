@@ -7,7 +7,6 @@
 #include "LobbyGameMode.generated.h"
 
 class ULobbyWidget;
-class UMapDataAsset;
 class UMapSelectorCell;
 class APlayerController;
 class ALobbyPlayerController;
@@ -63,6 +62,7 @@ private:
 
 public:
 	void PlayerRequestUpdate();
+	void PlayerRequestReplicateMapSelected(const FString& MapName);
 	bool IsAllPlayerReady() const;
 	void StartGameFromLobby(FString MapName);
 	void ExitGameSession();
