@@ -39,7 +39,7 @@ private:
 
 public:
 	UFUNCTION()
-	void ConfigureCell(FString Id, int32 CurrentPlayersInSession);
+	void ConfigureCell(FString Id, int32 CurrentPlayersInSession, int32 MaxPlayersForSession);
 
 private:
 	UFUNCTION()

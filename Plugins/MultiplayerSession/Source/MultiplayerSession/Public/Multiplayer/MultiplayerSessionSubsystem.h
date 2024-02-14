@@ -7,11 +7,23 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "MultiplayerSessionSubsystem.generated.h"
 
+USTRUCT()
+struct FSessionGameInfo
+{
+	GENERATED_USTRUCT_BODY()
+
+	FString SessionId;
+	FString OwnerId;
+	int32 CurrentPlayersCount;
+	int32 MaxPlayersCount;
+};
+
+
 /*
 * Declaring custom delegates for callbacks
 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnCreateSessionComplete, bool, bWasSuccessful);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionComplete, const TArray<FString>& SessionIdResults, bool bWasSuccessful);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FMultiplayerOnFindSessionComplete, const TArray<struct FSessionGameInfo>& SessionIdResults, bool bWasSuccessful);
 DECLARE_MULTICAST_DELEGATE_OneParam(FMultiplayerOnJoinSessionComplete, bool bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnDestroySessionComplete, bool, bWasSuccessful);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMultiplayerOnStartSessionComplete, bool, bWasSuccessful);

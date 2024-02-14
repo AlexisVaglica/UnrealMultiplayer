@@ -81,7 +81,7 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult)
 	if (!bWasSuccess) 
 	{
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegateHandle);
-		MultiplayerOnFindSessionComplete.Broadcast(TArray<FString>(), false);
+		MultiplayerOnFindSessionComplete.Broadcast(TArray<FSessionGameInfo>(), false);
 	}
 }
 
@@ -184,19 +184,28 @@ void UMultiplayerSessionSubsystem::FindSessionComplete(bool bWasSuccess)
 
 	if (LastSessionSearch->SearchResults.Num() <= 0) 
 	{
-		MultiplayerOnFindSessionComplete.Broadcast(TArray<FString>(), true);
+		MultiplayerOnFindSessionComplete.Broadcast(TArray<FSessionGameInfo>(), true);
 		return;
 	}
 
-	TArray<FString> SearchIdResults;
+	TArray<FSessionGameInfo> SessionGameInfoResults;
 	
 	for (int i = 0; i < LastSessionSearch->SearchResults.Num(); i++)
 	{
-		FString SessionResultId = LastSessionSearch->SearchResults[i].GetSessionIdStr();
-		SearchIdResults.Add(SessionResultId);
+		FSessionGameInfo SessionGameInfo;
+
+		SessionGameInfo.SessionId = LastSessionSearch->SearchResults[i].GetSessionIdStr();
+		SessionGameInfo.OwnerId = LastSessionSearch->SearchResults[i].Session.OwningUserId.Get()->ToString();
+
+		int32 MaxPlayers = LastSessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
+		int32 CurrentSpacesInSession = LastSessionSearch->SearchResults[i].Session.NumOpenPublicConnections;
+		SessionGameInfo.MaxPlayersCount = MaxPlayers;
+		SessionGameInfo.CurrentPlayersCount = MaxPlayers - CurrentSpacesInSession;
+
+		SessionGameInfoResults.Add(SessionGameInfo);
 	}
 
-	MultiplayerOnFindSessionComplete.Broadcast(SearchIdResults, bWasSuccess);
+	MultiplayerOnFindSessionComplete.Broadcast(SessionGameInfoResults, bWasSuccess);
 }
 
 void UMultiplayerSessionSubsystem::JoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
@@ -206,10 +215,9 @@ void UMultiplayerSessionSubsystem::JoinSessionComplete(FName SessionName, EOnJoi
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
 	}
 
-	if (Result == EOnJoinSessionCompleteResult::Success)
-	{
-		MultiplayerOnJoinSessionComplete.Broadcast(true);
-	}
+	bool bWasSuccess = Result == EOnJoinSessionCompleteResult::Success;
+
+	MultiplayerOnJoinSessionComplete.Broadcast(bWasSuccess);
 }
 
 void UMultiplayerSessionSubsystem::DestroySessionComplete(FName SessionName, bool bWasSuccess)

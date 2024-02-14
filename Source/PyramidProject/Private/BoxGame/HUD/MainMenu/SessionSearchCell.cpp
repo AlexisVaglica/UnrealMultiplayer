@@ -5,7 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
-void USessionSearchCell::ConfigureCell(FString Id, int32 CurrentPlayersInSession)
+void USessionSearchCell::ConfigureCell(FString Id, int32 CurrentPlayersInSession, int32 MaxPlayersForSession)
 {
 	CurrentSessionId = Id;
 
@@ -23,7 +23,7 @@ void USessionSearchCell::ConfigureCell(FString Id, int32 CurrentPlayersInSession
 
 	if (TextPlayers) 
 	{
-		FString PlayersCurrent = FString::Printf(TEXT("Players In Session: %d / 4"), CurrentPlayersInSession);
+		FString PlayersCurrent = FString::Printf(TEXT("Players In Session: %d / %d"), CurrentPlayersInSession, MaxPlayersForSession);
 		FText PlayersText = FText::FromString(PlayersCurrent);
 		TextPlayers->SetText(PlayersText);
 	}

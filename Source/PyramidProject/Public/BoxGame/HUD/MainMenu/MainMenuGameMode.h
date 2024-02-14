@@ -55,6 +55,9 @@ private:
 	FString ErrorJoinSessionsMessage{ TEXT("Error Joining Sessions") };
 
 	UPROPERTY()
+	FString JoinSessionMessage{ TEXT("Connecting to Session Host...") };
+
+	UPROPERTY()
 	UMainMenuWidget* MainMenuWidget;
 
 	UPROPERTY()
@@ -78,7 +81,7 @@ private:
 	void CreateSessionComplete(bool bWasSuccessful);
 
 	UFUNCTION()
-	void FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess);
+	void FindSessionsComplete(const TArray<struct FSessionGameInfo>& SessionIdResults, bool bWasSuccess);
 
 	UFUNCTION()
 	void JoinSessionComplete(bool bWasSuccessful);

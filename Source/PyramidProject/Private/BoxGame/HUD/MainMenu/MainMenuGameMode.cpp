@@ -6,8 +6,8 @@
 #include "BoxGame/DataAssets/MapDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "OnlineSessionSettings.h" 
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -87,7 +87,7 @@ void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 	if (MultiplayerSession) 
 	{
 		MultiplayerSession->JoinSession(SessionId);
-		MainMenuWidget->ShowOrDismissGeneralMessage(true, TEXT("Connecting to Session Host..."), false);
+		MainMenuWidget->ShowOrDismissGeneralMessage(true, JoinSessionMessage, false);
 	}
 }
 
@@ -120,7 +120,7 @@ void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
 	}
 }
 
-void AMainMenuGameMode::FindSessionsComplete(const TArray<FString>& SessionIdResults, bool bWasSuccess)
+void AMainMenuGameMode::FindSessionsComplete(const TArray<FSessionGameInfo>& SessionIdResults, bool bWasSuccess)
 {
 	if (bWasSuccess)
 	{

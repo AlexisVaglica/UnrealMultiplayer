@@ -113,7 +113,7 @@ public:
 	TSharedRef<SWidget, ESPMode::ThreadSafe> GetWidgetPrt();
 
 	void SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass);
-	void SetSessionResults(TArray<FString> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass);
+	void SetSessionResults(TArray<struct FSessionGameInfo> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass);
 	void ShowOrDismissGeneralMessage(bool IsShowing, FString NewText = TEXT("Waiting..."), bool IsButtonShowing = true);
 	void StartSessionSearch();
 	void StopSessionSearch();
@@ -163,5 +163,5 @@ private:
 	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
 	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);
-	void CreateSessionResultCell(FString SessionId, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass);
+	void CreateSessionResultCell(FSessionGameInfo SessionInfo, TSubclassOf<USessionSearchCell> SessionCellClass);
 };

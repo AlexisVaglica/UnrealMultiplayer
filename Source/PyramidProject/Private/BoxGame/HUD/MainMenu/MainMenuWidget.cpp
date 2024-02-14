@@ -4,6 +4,8 @@
 #include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
 #include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
 #include "BoxGame/HUD/MainMenu/SessionSearchCell.h"
+#include "BoxGame/HUD/MainMenu/MainMenuGameMode.h"
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "Components/Button.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
@@ -88,29 +90,6 @@ void UMainMenuWidget::LaunchBtnClicked()
 	{
 		OnLaunchButtonPressed.ExecuteIfBound(CurrentMapSelectedName);
 	}
-}
-
-void UMainMenuWidget::MapSelected(FString MapSelectedName)
-{
-	CurrentMapSelectedName = MapSelectedName;
-
-	for (auto MapCell : AllMapSelectorCells) 
-	{
-		if (!MapCell->CompareMapName(CurrentMapSelectedName)) 
-		{
-			MapCell->DeselectCell();
-		}
-	}
-
-	if (BtnLaunch)
-	{
-		BtnLaunch->SetIsEnabled(CurrentMapSelectedName != "");
-	}
-}
-
-void UMainMenuWidget::SessionSelected(FString SessionId)
-{
-	OnJoinButtonPressed.ExecuteIfBound(SessionId);
 }
 
 void UMainMenuWidget::MenuDismiss()
@@ -200,6 +179,29 @@ void UMainMenuWidget::GeneralMessageConfirmBtnClicked()
 	ShowOrDismissGeneralMessage(false);
 }
 
+void UMainMenuWidget::MapSelected(FString MapSelectedName)
+{
+	CurrentMapSelectedName = MapSelectedName;
+
+	for (auto MapCell : AllMapSelectorCells)
+	{
+		if (!MapCell->CompareMapName(CurrentMapSelectedName))
+		{
+			MapCell->DeselectCell();
+		}
+	}
+
+	if (BtnLaunch)
+	{
+		BtnLaunch->SetIsEnabled(CurrentMapSelectedName != "");
+	}
+}
+
+void UMainMenuWidget::SessionSelected(FString SessionId)
+{
+	OnJoinButtonPressed.ExecuteIfBound(SessionId);
+}
+
 TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
 {
 	return TakeWidget();
@@ -219,13 +221,13 @@ void UMainMenuWidget::SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf
 	}
 }
 
-void UMainMenuWidget::SetSessionResults(TArray<FString> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass)
+void UMainMenuWidget::SetSessionResults(TArray<FSessionGameInfo> SessionResults, TSubclassOf<USessionSearchCell> SessionCellClass)
 {
 	if (SessionResults.Num() > 0)
 	{
-		for (FString SessionId : SessionResults)
+		for (FSessionGameInfo Session : SessionResults)
 		{
-			CreateSessionResultCell(SessionId, 1, SessionCellClass);
+			CreateSessionResultCell(Session, SessionCellClass);
 		}
 	}
 	else
@@ -247,12 +249,12 @@ void UMainMenuWidget::CreateMapSelectCell(FString MapName, UTexture2D* MapImage,
 	}
 }
 
-void UMainMenuWidget::CreateSessionResultCell(FString SessionId, int32 CurrentPlayersCount, TSubclassOf<USessionSearchCell> SessionCellClass)
+void UMainMenuWidget::CreateSessionResultCell(FSessionGameInfo SessionInfo, TSubclassOf<USessionSearchCell> SessionCellClass)
 {
 	if (SessionSearchVBox)
 	{
 		USessionSearchCell* SessionCellWidget = CreateWidget<USessionSearchCell>(this, SessionCellClass);
-		SessionCellWidget->ConfigureCell(SessionId, CurrentPlayersCount);
+		SessionCellWidget->ConfigureCell(SessionInfo.SessionId, SessionInfo.CurrentPlayersCount, SessionInfo.MaxPlayersCount);
 		SessionCellWidget->OnSessionSelected.BindUObject(this, &ThisClass::SessionSelected);
 		SessionSearchVBox->AddChildToVerticalBox(SessionCellWidget);
 
