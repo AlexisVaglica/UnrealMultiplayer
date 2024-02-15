@@ -23,6 +23,9 @@ class APyramidProjectProjectile : public AActor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* ProjectileMovement;
 
+	UPROPERTY(EditAnywhere)
+	float MaxLifeTime{ 3.f };
+
 private:
 	UPROPERTY()
 	APyramidProjectCharacter* OwnerReference;
@@ -44,6 +47,9 @@ public:
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
-	void SetPlayerOwner(APyramidProjectCharacter* PlayerOwner, float LifeTime);
+	FORCEINLINE float GetBulletLifeTime() const { return MaxLifeTime; };
+
+	void SetPlayerOwner(APyramidProjectCharacter* PlayerOwner);
+
 };
 

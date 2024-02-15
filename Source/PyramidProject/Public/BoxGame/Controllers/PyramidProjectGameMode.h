@@ -47,6 +47,7 @@ private:
 	void ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer);
 	void GameOver();
 	void ConfigureOnlineSubsystem();
+	void ConfigurePyramidManager();
 
 	UFUNCTION()
 	void DestroySessionComplete(bool bWasSuccessful);

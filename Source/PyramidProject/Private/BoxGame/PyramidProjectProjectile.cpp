@@ -8,6 +8,9 @@
 
 APyramidProjectProjectile::APyramidProjectProjectile() 
 {
+	// Die after 3 seconds by default
+	InitialLifeSpan = 3;
+
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
@@ -49,12 +52,9 @@ void APyramidProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 	}
 }
 
-void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner, float LifeTime)
+void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner)
 {
 	OwnerReference = PlayerOwner;
-
-	// Die after 3 seconds by default
-	InitialLifeSpan = LifeTime;
 }
 
 void APyramidProjectProjectile::OnDestroyedActor(AActor* Actor)

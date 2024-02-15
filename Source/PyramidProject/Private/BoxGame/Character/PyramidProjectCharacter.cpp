@@ -166,8 +166,6 @@ void APyramidProjectCharacter::OnFire()
 	if (bCanShoot == false)
 		return;
 
-	OnCharacterStartFire.ExecuteIfBound(BulletLifeTime);
-
 	OnFireRPC();
 
 	// try and play the sound if specified
@@ -186,6 +184,8 @@ void APyramidProjectCharacter::OnFire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+
+	OnCharacterStartFire.ExecuteIfBound(BulletLifeTime);
 }
 
 void APyramidProjectCharacter::OnFireRPC_Implementation() 
@@ -214,8 +214,9 @@ void APyramidProjectCharacter::OnFireRPC_Implementation()
 
 				// spawn the projectile at the muzzle
 				APyramidProjectProjectile* Bullet = World->SpawnActor<APyramidProjectProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-				Bullet->SetPlayerOwner(this, BulletLifeTime);
+				Bullet->SetPlayerOwner(this);
 				Bullet->OnBulletWasDestroyed.BindUObject(this, &APyramidProjectCharacter::BulletWasDestroyed);
+				BulletLifeTime = Bullet->GetBulletLifeTime();
 				bCanShoot = false;
 			}
 		}

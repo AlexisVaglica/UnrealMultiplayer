@@ -27,8 +27,12 @@ void APyramidPlayerController::ConfigureCurrentHUD()
 void APyramidPlayerController::ConfigureCharacter()
 {
 	PyramidCharacter = Cast<APyramidProjectCharacter>(GetPawn());
-	PyramidCharacter->OnCharacterStartFire.BindUObject(this, &ThisClass::CharacterStartFire);
-	PyramidCharacter->OnCharacterFinishFire.BindUObject(this, &ThisClass::CharacterFinishFire);
+
+	if (PyramidCharacter) 
+	{
+		PyramidCharacter->OnCharacterStartFire.BindUObject(this, &ThisClass::CharacterStartFire);
+		PyramidCharacter->OnCharacterFinishFire.BindUObject(this, &ThisClass::CharacterFinishFire);
+	}
 }
 
 void APyramidPlayerController::UpdateScoreboard(FString PlayerName, float PlayerScore)

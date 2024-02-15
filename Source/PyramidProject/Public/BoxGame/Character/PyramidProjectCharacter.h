@@ -54,8 +54,7 @@ private:
 	UPROPERTY(Replicated)
 	bool bCanShoot = true;
 
-	UPROPERTY(EditAnywhere)
-	float BulletLifeTime{ 3.f };
+	float BulletLifeTime{ 0.f };
 
 public:
 	APyramidProjectCharacter();

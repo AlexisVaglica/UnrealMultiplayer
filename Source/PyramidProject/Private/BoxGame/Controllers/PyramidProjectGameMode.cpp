@@ -25,14 +25,7 @@ void APyramidProjectGameMode::BeginPlay() {
 
 	Super::BeginPlay();
 
-	PyramidManager = GetWorld()->SpawnActor<APyramidManager>(PyramidSpawnerClass, FVector(0, 0, 0), FRotator(0, 0, 0));
-
-	if (PyramidManager) 
-	{
-		PyramidManager->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
-		PyramidManager->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
-	}
-
+	ConfigurePyramidManager();
 	ConfigureOnlineSubsystem();
 }
 
@@ -48,6 +41,17 @@ void APyramidProjectGameMode::ConfigureOnlineSubsystem()
 		{
 			MultiplayerSession->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::DestroySessionComplete);
 		}
+	}
+}
+
+void APyramidProjectGameMode::ConfigurePyramidManager()
+{
+	PyramidManager = GetWorld()->SpawnActor<APyramidManager>(PyramidSpawnerClass, FVector(0, 0, 0), FRotator(0, 0, 0));
+
+	if (PyramidManager)
+	{
+		PyramidManager->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
+		PyramidManager->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
 	}
 }
 
