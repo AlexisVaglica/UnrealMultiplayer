@@ -29,9 +29,6 @@ APyramidProjectProjectile::APyramidProjectProjectile()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
 
-	// Die after 3 seconds by default
-	InitialLifeSpan = MaxLifeTime;
-
 	// I Call the function when this projectile was Destroyed
 	this->OnDestroyed.AddDynamic(this, &APyramidProjectProjectile::OnDestroyedActor);
 }
@@ -52,9 +49,12 @@ void APyramidProjectProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* Othe
 	}
 }
 
-void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner)
+void APyramidProjectProjectile::SetPlayerOwner(APyramidProjectCharacter* PlayerOwner, float LifeTime)
 {
 	OwnerReference = PlayerOwner;
+
+	// Die after 3 seconds by default
+	InitialLifeSpan = LifeTime;
 }
 
 void APyramidProjectProjectile::OnDestroyedActor(AActor* Actor)

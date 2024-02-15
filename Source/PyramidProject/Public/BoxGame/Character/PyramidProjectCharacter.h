@@ -10,6 +10,9 @@ class APyramidProjectHUD;
 class APyramidPlayerState;
 class UInputComponent;
 
+DECLARE_DELEGATE(FOnCharacterFinishFire);
+DECLARE_DELEGATE_OneParam(FOnCharacterStartFire, float Time);
+
 UCLASS(config=Game)
 class APyramidProjectCharacter : public ACharacter
 {
@@ -51,6 +54,9 @@ private:
 	UPROPERTY(Replicated)
 	bool bCanShoot = true;
 
+	UPROPERTY(EditAnywhere)
+	float BulletLifeTime{ 3.f };
+
 public:
 	APyramidProjectCharacter();
 
@@ -89,6 +95,9 @@ public:
 	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
+
+	FOnCharacterStartFire OnCharacterStartFire;
+	FOnCharacterFinishFire OnCharacterFinishFire;
 
 protected:
 	

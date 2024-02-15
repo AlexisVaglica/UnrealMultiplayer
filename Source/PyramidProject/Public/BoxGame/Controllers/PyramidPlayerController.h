@@ -7,6 +7,7 @@
 #include "PyramidPlayerController.generated.h"
 
 class APyramidProjectHUD;
+class APyramidProjectCharacter;
 
 /**
  * 
@@ -19,6 +20,9 @@ class PYRAMIDPROJECT_API APyramidPlayerController : public APlayerController
 private:
 	UPROPERTY()
 	APyramidProjectHUD* CurrentHUD;
+
+	UPROPERTY()
+	APyramidProjectCharacter* PyramidCharacter;
 
 public:
 	UFUNCTION(Client, Reliable)
@@ -33,8 +37,11 @@ protected:
 
 private:
 	void ConfigureCurrentHUD();
-
+	void ConfigureCharacter();
 	void DisableCharacter();
+
+	void CharacterStartFire(float Time);
+	void CharacterFinishFire();
 
 	UFUNCTION(Client, Reliable)
 	void ChangeScoreInHUD(int BoxCount);

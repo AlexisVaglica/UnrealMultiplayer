@@ -27,9 +27,6 @@ private:
 	UPROPERTY()
 	APyramidProjectCharacter* OwnerReference;
 
-	UPROPERTY(EditAnywhere)
-	float MaxLifeTime{ 3.f };
-
 	UFUNCTION()
 	void OnDestroyedActor(AActor* Actor);
 
@@ -47,6 +44,6 @@ public:
 	/** Returns ProjectileMovement subobject **/
 	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
-	void SetPlayerOwner(APyramidProjectCharacter* PlayerOwner);
+	void SetPlayerOwner(APyramidProjectCharacter* PlayerOwner, float LifeTime);
 };
 

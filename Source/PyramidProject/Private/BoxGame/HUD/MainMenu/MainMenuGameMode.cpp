@@ -28,6 +28,8 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 		return;
 	}
 
+	//ToDo: Add an IF for change Lan or Steam
+
 	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchSoloGame);
 	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
 	MainMenuWidget->OnHostButtonPressed.BindUObject(this, &ThisClass::LaunchHostGame);

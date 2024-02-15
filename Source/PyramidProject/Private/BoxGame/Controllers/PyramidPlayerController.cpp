@@ -2,15 +2,16 @@
 
 
 #include "BoxGame/Controllers/PyramidPlayerController.h"
-#include "Net/UnrealNetwork.h"
 #include "BoxGame/Controllers/PyramidPlayerState.h"
 #include "BoxGame/HUD/PyramidProjectHUD.h"
 #include "BoxGame/Character/PyramidProjectCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 void APyramidPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ConfigureCharacter();
 	ConfigureCurrentHUD();
 }
 
@@ -21,6 +22,13 @@ void APyramidPlayerController::ConfigureCurrentHUD()
 		AHUD* PlayerHUD = GetHUD();
 		CurrentHUD = Cast<APyramidProjectHUD>(PlayerHUD);
 	}
+}
+
+void APyramidPlayerController::ConfigureCharacter()
+{
+	PyramidCharacter = Cast<APyramidProjectCharacter>(GetPawn());
+	PyramidCharacter->OnCharacterStartFire.BindUObject(this, &ThisClass::CharacterStartFire);
+	PyramidCharacter->OnCharacterFinishFire.BindUObject(this, &ThisClass::CharacterFinishFire);
 }
 
 void APyramidPlayerController::UpdateScoreboard(FString PlayerName, float PlayerScore)
@@ -62,10 +70,25 @@ void APyramidPlayerController::ChangeToGameOver_Implementation(const TArray<APla
 
 void APyramidPlayerController::DisableCharacter()
 {
-	APyramidProjectCharacter* PyramidCharacter = Cast<APyramidProjectCharacter>(GetPawn());
 	if (PyramidCharacter) 
 	{
 		PyramidCharacter->DisableCharacter();
+	}
+}
+
+void APyramidPlayerController::CharacterStartFire(float Time)
+{
+	if (CurrentHUD) 
+	{
+		CurrentHUD->StartShootBar(Time);
+	}
+}
+
+void APyramidPlayerController::CharacterFinishFire()
+{
+	if (CurrentHUD)
+	{
+		CurrentHUD->StopShootBar();
 	}
 }
 

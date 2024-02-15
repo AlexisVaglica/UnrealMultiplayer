@@ -13,6 +13,8 @@ class UUserWidget;
 class UButton;
 class UVerticalBox;
 class UScoreCellWidget;
+class UImage;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class APyramidProjectHUD : public AHUD
@@ -28,6 +30,7 @@ private:
 	UButton* BackMainMenuButton;
 	UVerticalBox* VBButtons;
 	UVerticalBox* VBScoreboard;
+	UImage* ShootBarImage;
 
 	TMap<FString, UScoreCellWidget*> ScoreCells;
 
@@ -47,10 +50,20 @@ private:
 	const FName ButtonMainMenuName{ FName(TEXT("Btn_Menu")) };
 	const FName VerticalBoxName{ FName(TEXT("VB_Buttons")) };
 	const FName ScoreboardName{ FName(TEXT("VB_Player_List")) };
+	const FName ShootBarName{ FName(TEXT("Img_ShootBar")) };
 
 	const FString WaitNotify{ TEXT("Waiting for the Host...") };
 	const FString RestartingNotify{ TEXT("Restarting...") };
 	const FString BackToMainMenuNotify{ TEXT("Backing Back To Main Menu...") };
+
+	UMaterialInstanceDynamic* ShootBarMaterial;
+
+	bool bShootBarStarting{ false };
+	float ShootBarDecimal{ 0.f };
+	float ShootBarMaxDecimal{ 1.f };
+	float MaxTimeToReloadBar{ 0.f };
+	float CurrentTimeToReload{ 0.f };
+	const FString DecimalParamName{ TEXT("Decimal") };
 
 protected:
 	UUserWidget* UserWidget;
@@ -65,6 +78,12 @@ public:
 	void SetGameOverVisibility(const TArray<APlayerState*>& PlayerList);
 	void DisplayPlayerName();
 	void UpdatePlayerScore(FString PlayerName, float Score);
+
+	void StartShootBar(float Time);
+	void StopShootBar();
+
+protected:
+	virtual void Tick(float TimeDelta) override;
 
 private:
 	void CreateScoreboardCell(FString PlayerName, int ScorePoints);

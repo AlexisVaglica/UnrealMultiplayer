@@ -1,25 +1,28 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BoxGame/HUD/PyramidProjectHUD.h"
+#include "BoxGame/Controllers/PyramidPlayerState.h"
+#include "BoxGame/Controllers/PyramidProjectGameMode.h"
+#include "BoxGame/HUD/Score/ScoreCellWidget.h"
 #include "Engine/Canvas.h"
 #include "Engine/Texture2D.h"
-#include "TextureResource.h"
-#include "CanvasItem.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
 #include "GameFramework/GameState.h"
-#include "BoxGame/Controllers/PyramidPlayerState.h"
-#include "BoxGame/Controllers/PyramidProjectGameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "BoxGame/HUD/Score/ScoreCellWidget.h"
+#include "CanvasItem.h"
+#include "TextureResource.h"
 
 APyramidProjectHUD::APyramidProjectHUD()
 {
 	static ConstructorHelpers::FObjectFinder<UTexture2D> CrosshairTexObj(TEXT("/Game/FirstPerson/Textures/FirstPersonCrosshair"));
 	CrosshairTex = CrosshairTexObj.Object;
+
+	SetActorTickEnabled(true);
 }
 
 void APyramidProjectHUD::BeginPlay()
@@ -62,12 +65,15 @@ void APyramidProjectHUD::ConfigureWidget()
 			ResetButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonResetName));
 			BackMainMenuButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonMainMenuName));
 
+			ShootBarImage = Cast<UImage>(UserWidget->GetWidgetFromName(ShootBarName));
+
 			VBScoreboard = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(ScoreboardName));
 			VBButtons = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(VerticalBoxName));
 
 			NotifyText->SetVisibility(ESlateVisibility::Hidden);
 			GameoverText->SetVisibility(ESlateVisibility::Hidden);
 			VBButtons->SetVisibility(ESlateVisibility::Hidden);
+			ShootBarImage->SetVisibility(ESlateVisibility::Hidden);
 
 			if (IsPlayerAuthority())
 			{
@@ -164,6 +170,40 @@ void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
 	{
 		UScoreCellWidget* CurrentCell = ScoreCells[PlayerName];
 		ConfigureScoreCell(CurrentCell, PlayerName, Score);
+	}
+}
+
+void APyramidProjectHUD::StartShootBar(float Time)
+{
+
+	ShootBarImage->SetVisibility(ESlateVisibility::Visible);
+
+	if(ShootBarMaterial == nullptr)
+	{
+		ShootBarMaterial = ShootBarImage->GetDynamicMaterial();
+	}
+
+	ShootBarMaterial->SetScalarParameterValue(FName(DecimalParamName), 0.f);
+
+	MaxTimeToReloadBar = Time;
+	CurrentTimeToReload = 0.f;
+	ShootBarDecimal = 0.f;
+	bShootBarStarting = true;
+}
+
+void APyramidProjectHUD::StopShootBar()
+{
+	ShootBarImage->SetVisibility(ESlateVisibility::Hidden);
+	bShootBarStarting = false;
+}
+
+void APyramidProjectHUD::Tick(float TimeDelta)
+{
+	if (bShootBarStarting && ShootBarDecimal < ShootBarMaxDecimal && ShootBarMaterial)
+	{
+		CurrentTimeToReload += TimeDelta;
+		ShootBarDecimal = ShootBarMaxDecimal * (CurrentTimeToReload / MaxTimeToReloadBar);
+		ShootBarMaterial->SetScalarParameterValue(FName(DecimalParamName), ShootBarDecimal);
 	}
 }
 
