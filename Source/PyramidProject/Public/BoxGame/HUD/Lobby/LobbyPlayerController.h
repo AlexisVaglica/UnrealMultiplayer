@@ -37,7 +37,7 @@ protected:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const;
 
 private:
-	void LaunchGame(FString MapName);
+	void LaunchGame();
 	void CancelGame();
 	void SetIsReadyState(bool NewReadyState);
 	void PlayerChangeReady();
@@ -50,6 +50,9 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRequestPlayerListUpdate();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestMapUpdate();
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetIsReadyState(bool NewReadyState);

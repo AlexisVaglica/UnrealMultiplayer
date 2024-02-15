@@ -29,7 +29,7 @@ class PYRAMIDPROJECT_API ULobbyWidget : public UUserWidget
 public:
 	FOnButtonPressed OnCancelButtonPressed;
 	FOnButtonPressed OnReadyButtonPressed;
-	FOnButtonOneParamPressed OnLaunchButtonPressed;
+	FOnButtonPressed OnLaunchButtonPressed;
 	FOnButtonOneParamPressed OnMapButtonPressed;
 
 private:

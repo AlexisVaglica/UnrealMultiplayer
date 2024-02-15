@@ -58,13 +58,14 @@ private:
 
 	bool bIsLaunchCountdownEnabled{ false };
 
-	FString MapToTravel{ TEXT("") };
+	FString MapSelected{ TEXT("") };
 
 public:
 	void PlayerRequestUpdate();
-	void PlayerRequestReplicateMapSelected(const FString& MapName);
+	void PlayerRequestMapUpdate();
+	void PlayerHostSelectedMap(const FString& MapName);
 	bool IsAllPlayerReady() const;
-	void StartGameFromLobby(FString MapName);
+	void StartGameFromLobby();
 	void ExitGameSession();
 
 protected:
