@@ -3,14 +3,9 @@
 #include "BoxGame/Manager/PyramidManager.h"
 #include "BoxGame/BoxNode.h"
 
-// Sets default values
 APyramidManager::APyramidManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	const ConstructorHelpers::FClassFinder<AActor> BoxNodeClassFinder(TEXT("/Game/ProjectGame/Blueprints/BP_BoxNode"));
-	BoxNodeClass = BoxNodeClassFinder.Class;
 }
 
 void APyramidManager::BeginPlay()

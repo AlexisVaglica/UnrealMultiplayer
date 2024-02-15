@@ -25,7 +25,7 @@ class PYRAMIDPROJECT_API ALobbyHUD : public AHUD
 public:
 	FOnButtonPressed OnReadyButtonPressed;
 	FOnButtonPressed OnCancelButtonPressed;
-	FOnButtonOneParamPressed OnLaunchGameShoot;
+	FOnButtonPressed OnLaunchGameSelected;
 	FOnButtonOneParamPressed OnMapWasSelected;
 
 private:
@@ -53,7 +53,7 @@ protected:
 private:
 	bool IsPlayerHost();
 	void ConfigureLobbyWidget();
-	void LaunchGame(FString MapName);
+	void LaunchGame();
 	void CancelGame();
 	void PlayerPressedReady();
 

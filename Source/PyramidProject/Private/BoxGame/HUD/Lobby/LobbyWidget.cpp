@@ -49,7 +49,7 @@ void ULobbyWidget::CancelButtonClicked()
 
 void ULobbyWidget::LaunchButtonClicked()
 {
-	OnLaunchButtonPressed.ExecuteIfBound(CurrentMapSelectedName);
+	OnLaunchButtonPressed.ExecuteIfBound();
 }
 
 void ULobbyWidget::ReadyButtonClicked()

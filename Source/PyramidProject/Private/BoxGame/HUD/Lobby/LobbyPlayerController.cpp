@@ -23,13 +23,15 @@ void ALobbyPlayerController::BeginPlay()
 	{
 		if (IsPlayerHost())
 		{
-			LobbyHUD->OnLaunchGameShoot.BindUObject(this, &ThisClass::LaunchGame);
+			LobbyHUD->OnLaunchGameSelected.BindUObject(this, &ThisClass::LaunchGame);
 			LobbyHUD->OnMapWasSelected.BindUObject(this, &ThisClass::RequestServerReplicateMapSelected);
 		}
 
 		LobbyHUD->OnReadyButtonPressed.BindUObject(this, &ThisClass::PlayerChangeReady);
 		LobbyHUD->OnCancelButtonPressed.BindUObject(this, &ThisClass::CancelGame);
 	}
+
+	ServerRequestMapUpdate();
 }
 
 bool ALobbyPlayerController::IsPlayerHost() const
@@ -69,14 +71,14 @@ bool ALobbyPlayerController::CanGameStart() const
 	return false;
 }
 
-void ALobbyPlayerController::LaunchGame(FString MapName)
+void ALobbyPlayerController::LaunchGame()
 {
 	if (IsPlayerHost())
 	{
 		ALobbyGameMode* GM = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
 		if (GM)
 		{
-			GM->StartGameFromLobby(MapName);
+			GM->StartGameFromLobby();
 		}
 	}
 }
@@ -104,7 +106,7 @@ void ALobbyPlayerController::RequestServerReplicateMapSelected(FString MapName)
 
 	if (GM)
 	{
-		GM->PlayerRequestReplicateMapSelected(MapName);
+		GM->PlayerHostSelectedMap(MapName);
 	}
 }
 
@@ -134,6 +136,16 @@ void ALobbyPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void ALobbyPlayerController::ServerRequestPlayerListUpdate_Implementation()
 {
 	RequestServerPlayerListUpdate();
+}
+
+void ALobbyPlayerController::ServerRequestMapUpdate_Implementation()
+{
+	ALobbyGameMode* GM = Cast<ALobbyGameMode>(GetWorld()->GetAuthGameMode());
+
+	if (GM)
+	{
+		GM->PlayerRequestMapUpdate();
+	}
 }
 
 void ALobbyPlayerController::ServerSetIsReadyState_Implementation(bool NewReadyState)

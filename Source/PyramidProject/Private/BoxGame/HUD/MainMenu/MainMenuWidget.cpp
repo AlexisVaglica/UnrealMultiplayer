@@ -22,6 +22,13 @@ bool UMainMenuWidget::Initialize()
 		return false;
 	}
 
+	ConfigureWidget();
+
+	return true;
+}
+
+void UMainMenuWidget::ConfigureWidget()
+{
 	if (BtnSoloGame)
 	{
 		BtnSoloGame->OnClicked.AddDynamic(this, &ThisClass::SoloGameBtnClicked);
@@ -57,24 +64,22 @@ bool UMainMenuWidget::Initialize()
 		BtnBack->OnClicked.AddDynamic(this, &ThisClass::BackBtnClicked);
 	}
 
-	if (BtnLaunch) 
+	if (BtnLaunch)
 	{
 		BtnLaunch->OnClicked.AddDynamic(this, &ThisClass::LaunchBtnClicked);
 		BtnLaunch->SetIsEnabled(false);
 	}
 
-	if (BtnRefresh) 
+	if (BtnRefresh)
 	{
 		BtnRefresh->OnClicked.AddDynamic(this, &ThisClass::RefreshBtnClicked);
 	}
 
-	if (BtnGeneralMessage) 
+	if (BtnGeneralMessage)
 	{
 		BtnGeneralMessage->OnClicked.AddDynamic(this, &ThisClass::GeneralMessageConfirmBtnClicked);
 		ShowOrDismissGeneralMessage(false);
 	}
-
-	return true;
 }
 
 void UMainMenuWidget::HostBtnClicked()
@@ -157,7 +162,6 @@ void UMainMenuWidget::SearchBtnClicked()
 void UMainMenuWidget::ConnectionBtnClicked()
 {
 	OnConnectionButtonPressed.ExecuteIfBound();
-	//ToDo: Add an IF for change Lan or Steam
 }
 
 void UMainMenuWidget::BackBtnClicked()

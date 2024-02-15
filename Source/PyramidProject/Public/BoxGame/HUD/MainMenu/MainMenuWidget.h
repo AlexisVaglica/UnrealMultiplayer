@@ -160,6 +160,7 @@ private:
 	void SessionSelected(FString SessionId);
 
 	void MenuDismiss();
+	void ConfigureWidget();
 	void ChangeSoloGameVisibility(bool IsSoloGamePressed);
 	void ChangeSearchVisibility(bool IsSearchPressed);
 	void CreateMapSelectCell(FString MapName, UTexture2D* MapImage, TSubclassOf<UMapSelectorCell> MapCellClass);

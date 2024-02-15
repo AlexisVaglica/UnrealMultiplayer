@@ -75,10 +75,8 @@ void ALobbyGameMode::UpdatePlayerList()
 	}
 }
 
-void ALobbyGameMode::StartGameFromLobby(FString MapName)
+void ALobbyGameMode::StartGameFromLobby()
 {
-	MapToTravel = MapName;
-
 	for (auto Player : ConnectedPlayers) 
 	{
 		Player->ClientChangeWidgetToLaunch();
@@ -115,6 +113,19 @@ void ALobbyGameMode::PlayerRequestUpdate()
 	UpdatePlayerList();
 }
 
+void ALobbyGameMode::PlayerRequestMapUpdate()
+{
+	if (MapSelected.IsEmpty()) 
+	{
+		return;
+	}
+
+	for (ALobbyPlayerController* Player : ConnectedPlayers)
+	{
+		Player->ClientChangeMapSelected(MapSelected);
+	}
+}
+
 void ALobbyGameMode::DestroySessionComplete(bool bWasSuccessful)
 {
 	ReturnToMainMenuHost();
@@ -122,13 +133,12 @@ void ALobbyGameMode::DestroySessionComplete(bool bWasSuccessful)
 
 void ALobbyGameMode::StartSessionComplete(bool bWasSuccessful)
 {
-	GetWorld()->ServerTravel(MapToTravel);
+	GetWorld()->ServerTravel(MapSelected);
 }
 
-void ALobbyGameMode::PlayerRequestReplicateMapSelected(const FString& MapName) 
+void ALobbyGameMode::PlayerHostSelectedMap(const FString& MapName) 
 {
-	for (ALobbyPlayerController* Player : ConnectedPlayers)
-	{
-		Player->ClientChangeMapSelected(MapName);
-	}
+	MapSelected = MapName;
+
+	PlayerRequestMapUpdate();
 }

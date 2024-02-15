@@ -49,9 +49,9 @@ void ALobbyHUD::PlayerCanLaunchGame(bool CanLaunch)
 	LobbyWidget->SetLaunchButton(IsPlayerHost(), CanLaunch);
 }
 
-void ALobbyHUD::LaunchGame(FString MapName)
+void ALobbyHUD::LaunchGame()
 {
-	OnLaunchGameShoot.ExecuteIfBound(MapName);
+	OnLaunchGameSelected.ExecuteIfBound();
 }
 
 void ALobbyHUD::CancelGame()
