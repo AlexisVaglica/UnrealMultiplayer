@@ -7,6 +7,7 @@
 #include "LobbyPlayerController.generated.h"
 
 class UMapDataAsset;
+class ALobbyHUD;
 
 /**
  * 
@@ -19,6 +20,9 @@ class PYRAMIDPROJECT_API ALobbyPlayerController : public APlayerController
 private:
 	UPROPERTY(Replicated)
 	bool bIsReady;
+
+	UPROPERTY()
+	ALobbyHUD* LobbyHUD;
 
 public:
 	UFUNCTION(Client, Reliable)

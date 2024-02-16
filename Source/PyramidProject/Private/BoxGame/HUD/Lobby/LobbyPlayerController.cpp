@@ -17,7 +17,7 @@ void ALobbyPlayerController::BeginPlay()
 	FTimerHandle RequestServerPlayerListUpdateHanndle;
 	GetWorld()->GetTimerManager().SetTimer(RequestServerPlayerListUpdateHanndle, this, &ALobbyPlayerController::RequestServerPlayerListUpdate, 0.5f, false);
 
-	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
+	LobbyHUD = Cast<ALobbyHUD>(GetHUD());
 
 	if (LobbyHUD)
 	{
@@ -107,6 +107,11 @@ void ALobbyPlayerController::RequestServerReplicateMapSelected(FString MapName)
 	if (GM)
 	{
 		GM->PlayerHostSelectedMap(MapName);
+
+		if (LobbyHUD) 
+		{
+			LobbyHUD->PlayerCanLaunchGame(CanGameStart());
+		}
 	}
 }
 
@@ -155,8 +160,6 @@ void ALobbyPlayerController::ServerSetIsReadyState_Implementation(bool NewReadyS
 
 void ALobbyPlayerController::ClientUpdatePlayerList_Implementation(const TArray<FLobbyPlayerInfo>& PlayerInfoArray, const struct FLobbyGameInfo& GameInfo)
 {
-	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
-
 	if (LobbyHUD)
 	{
 		if (IsPlayerHost())
@@ -170,8 +173,6 @@ void ALobbyPlayerController::ClientUpdatePlayerList_Implementation(const TArray<
 
 void ALobbyPlayerController::ClientChangeWidgetToLaunch_Implementation()
 {
-	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
-
 	if (LobbyHUD)
 	{
 		LobbyHUD->ChangeWidgetToLaunch();
@@ -180,8 +181,6 @@ void ALobbyPlayerController::ClientChangeWidgetToLaunch_Implementation()
 
 void ALobbyPlayerController::ClientChangeMapSelected_Implementation(const FString& MapName)
 {
-	auto LobbyHUD = Cast<ALobbyHUD>(GetHUD());
-
 	if (LobbyHUD)
 	{
 		LobbyHUD->ChangeMapSelected(MapName);
