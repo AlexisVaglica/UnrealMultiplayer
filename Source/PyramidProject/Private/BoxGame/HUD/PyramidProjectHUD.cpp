@@ -61,6 +61,7 @@ void APyramidProjectHUD::ConfigureWidget()
 			DisplayText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextScoreName));
 			GameoverText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextGameoverName));
 			PlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextPlayerName));
+			WinPlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextWinPlayerName));
 			NotifyText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextNotifyName));
 			ResetButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonResetName));
 			BackMainMenuButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonMainMenuName));
@@ -146,6 +147,15 @@ void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& Play
 		float Score = PlayerState->GetScore();
 		CreateScoreboardCell(PlayerName, Score);
 	}
+
+	if (WinPlayerNameText)
+	{
+		WinPlayerNameText->SetVisibility(ESlateVisibility::Visible);
+		FString PlayerName = PlayerList[0]->GetPlayerName();
+		FString WinPlayerString = FString::Printf(TEXT("%s Win"), *PlayerName);
+		FText WinPlayerText = FText::FromString(WinPlayerString);
+		WinPlayerNameText->SetText(WinPlayerText);
+	}
 }
 
 void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
@@ -175,7 +185,6 @@ void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
 
 void APyramidProjectHUD::StartShootBar(float Time)
 {
-
 	ShootBarImage->SetVisibility(ESlateVisibility::Visible);
 
 	if(ShootBarMaterial == nullptr)

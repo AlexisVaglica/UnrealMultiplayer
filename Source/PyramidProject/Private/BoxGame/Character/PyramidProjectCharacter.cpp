@@ -126,6 +126,7 @@ void APyramidProjectCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APyramidProjectCharacter, bCanShoot);
+	DOREPLIFETIME(APyramidProjectCharacter, BulletLifeTime);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -184,8 +185,6 @@ void APyramidProjectCharacter::OnFire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
-
-	OnCharacterStartFire.ExecuteIfBound(BulletLifeTime);
 }
 
 void APyramidProjectCharacter::OnFireRPC_Implementation() 
@@ -216,8 +215,9 @@ void APyramidProjectCharacter::OnFireRPC_Implementation()
 				APyramidProjectProjectile* Bullet = World->SpawnActor<APyramidProjectProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 				Bullet->SetPlayerOwner(this);
 				Bullet->OnBulletWasDestroyed.BindUObject(this, &APyramidProjectCharacter::BulletWasDestroyed);
-				BulletLifeTime = Bullet->GetBulletLifeTime();
 				bCanShoot = false;
+
+				ClientSaveBulletLifeTime(Bullet->GetBulletLifeTime());
 			}
 		}
 	}
@@ -226,6 +226,19 @@ void APyramidProjectCharacter::OnFireRPC_Implementation()
 void APyramidProjectCharacter::BulletWasDestroyed()
 {
 	bCanShoot = true;
+	OnCharacterFinishFire.ExecuteIfBound();
+
+	ClientBulletWasDestroyed();
+}
+
+void APyramidProjectCharacter::ClientSaveBulletLifeTime_Implementation(float NewLifeTime)
+{
+	BulletLifeTime = NewLifeTime;
+	OnCharacterStartFire.ExecuteIfBound(BulletLifeTime);
+}
+
+void APyramidProjectCharacter::ClientBulletWasDestroyed_Implementation() 
+{
 	OnCharacterFinishFire.ExecuteIfBound();
 }
 

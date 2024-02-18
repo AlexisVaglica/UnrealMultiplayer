@@ -54,6 +54,7 @@ private:
 	UPROPERTY(Replicated)
 	bool bCanShoot = true;
 
+	UPROPERTY(Replicated)
 	float BulletLifeTime{ 0.f };
 
 public:
@@ -141,7 +142,15 @@ protected:
 	void TouchUpdate(const ETouchIndex::Type FingerIndex, const FVector Location);
 	TouchData	TouchItem;
 	
+
+private:
 	void BulletWasDestroyed();
+
+	UFUNCTION(Client, Reliable)
+	void ClientSaveBulletLifeTime(float NewLifeTime);
+
+	UFUNCTION(Client, Reliable)
+	void ClientBulletWasDestroyed();
 
 protected:
 	// APawn interface

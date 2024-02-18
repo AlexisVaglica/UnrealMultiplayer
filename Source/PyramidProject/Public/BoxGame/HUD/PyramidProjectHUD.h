@@ -24,6 +24,7 @@ class APyramidProjectHUD : public AHUD
 private:
 	UTextBlock* DisplayText;
 	UTextBlock* GameoverText;
+	UTextBlock* WinPlayerNameText;
 	UTextBlock* PlayerNameText;
 	UTextBlock* NotifyText;
 	UButton* ResetButton;
@@ -46,6 +47,7 @@ private:
 	const FName TextGameoverName{ FName(TEXT("TxtBox_GameOver")) };
 	const FName TextPlayerName{ FName(TEXT("TxtBox_PlayerName")) };
 	const FName TextNotifyName{ FName(TEXT("TxtBox_Notify")) };
+	const FName TextWinPlayerName{ FName(TEXT("TxtBox_WinPlayer")) };
 	const FName ButtonResetName{ FName(TEXT("Btn_Reset")) };
 	const FName ButtonMainMenuName{ FName(TEXT("Btn_Menu")) };
 	const FName VerticalBoxName{ FName(TEXT("VB_Buttons")) };
