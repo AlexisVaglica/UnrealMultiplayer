@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/Controllers/PyramidPlayerState.h"
-#include "BoxGame/Controllers/PyramidPlayerController.h"
+#include "BoxGame/Match/PyramidPlayerState.h"
+#include "BoxGame/Match/PyramidPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
 void APyramidPlayerState::SetFibonacciScore(float ScoreDelta)

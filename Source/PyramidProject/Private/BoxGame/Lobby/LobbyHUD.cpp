@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/HUD/Lobby/LobbyHUD.h"
-#include "BoxGame/HUD/Lobby/LobbyWidget.h"
+#include "BoxGame/Lobby/LobbyHUD.h"
+#include "BoxGame/Lobby/LobbyWidget.h"
+#include "BoxGame/Lobby/LobbyGameMode.h"
 #include "BoxGame/DataAssets/MapDataAsset.h"
-#include "BoxGame/HUD/Lobby/LobbyGameMode.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"

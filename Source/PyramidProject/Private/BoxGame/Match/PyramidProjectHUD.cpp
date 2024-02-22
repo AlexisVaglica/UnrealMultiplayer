@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BoxGame/HUD/PyramidProjectHUD.h"
-#include "BoxGame/Controllers/PyramidPlayerState.h"
-#include "BoxGame/Controllers/PyramidProjectGameMode.h"
-#include "BoxGame/HUD/Score/ScoreCellWidget.h"
+#include "BoxGame/Match/PyramidProjectHUD.h"
+#include "BoxGame/Match/PyramidPlayerState.h"
+#include "BoxGame/Match/PyramidProjectGameMode.h"
+#include "BoxGame/Match/Score/ScoreCellWidget.h"
 #include "Engine/Canvas.h"
 #include "Engine/Texture2D.h"
 #include "Blueprint/UserWidget.h"

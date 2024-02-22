@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/HUD/MainMenu/MainMenuWidget.h"
-#include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
-#include "BoxGame/HUD/MainMenu/SessionSearchCell.h"
-#include "BoxGame/HUD/MainMenu/MainMenuGameMode.h"
+#include "BoxGame/MainMenu/MainMenuWidget.h"
+#include "BoxGame/MainMenu/MapSelectorCell.h"
+#include "BoxGame/MainMenu/SessionSearchCell.h"
+#include "BoxGame/MainMenu/MainMenuGameMode.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "Components/Button.h"
 #include "Components/Border.h"

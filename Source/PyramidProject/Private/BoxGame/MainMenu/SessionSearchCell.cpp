@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/HUD/MainMenu/SessionSearchCell.h"
+#include "BoxGame/MainMenu/SessionSearchCell.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 

@@ -1,10 +1,10 @@
  // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/Controllers/PyramidPlayerController.h"
-#include "BoxGame/Controllers/PyramidPlayerState.h"
-#include "BoxGame/HUD/PyramidProjectHUD.h"
-#include "BoxGame/Character/PyramidProjectCharacter.h"
+#include "BoxGame/Match/PyramidPlayerController.h"
+#include "BoxGame/Match/PyramidPlayerState.h"
+#include "BoxGame/Match/PyramidProjectHUD.h"
+#include "BoxGame/Match/PyramidProjectCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 void APyramidPlayerController::BeginPlay()

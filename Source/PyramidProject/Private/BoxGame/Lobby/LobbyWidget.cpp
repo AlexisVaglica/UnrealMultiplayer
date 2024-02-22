@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/HUD/Lobby/LobbyWidget.h"
-#include "BoxGame/HUD/Lobby/LobbyGameMode.h"
-#include "BoxGame/HUD/Lobby/LobbyPlayerCell.h"
-#include "BoxGame/HUD/MainMenu/MapSelectorCell.h"
+#include "BoxGame/Lobby/LobbyWidget.h"
+#include "BoxGame/Lobby/LobbyGameMode.h"
+#include "BoxGame/Lobby/LobbyPlayerCell.h"
+#include "BoxGame/MainMenu/MapSelectorCell.h"
 #include "BoxGame/DataAssets/MapDataAsset.h"
 #include "Components/VerticalBox.h"
 #include "Components/HorizontalBox.h"

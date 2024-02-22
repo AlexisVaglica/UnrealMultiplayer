@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BoxGame/Controllers/PyramidProjectGameMode.h"
-#include "BoxGame/HUD/PyramidProjectHUD.h"
-#include "BoxGame/Character/PyramidProjectCharacter.h"
-#include "BoxGame/Manager/PyramidManager.h"
-#include "BoxGame/Controllers/PyramidPlayerState.h"
-#include "BoxGame/Controllers/PyramidPlayerController.h"
+#include "BoxGame/Match/PyramidProjectGameMode.h"
+#include "BoxGame/Match/PyramidProjectHUD.h"
+#include "BoxGame/Match/PyramidProjectCharacter.h"
+#include "BoxGame/Match/Pyramid/PyramidManager.h"
+#include "BoxGame/Match/PyramidPlayerState.h"
+#include "BoxGame/Match/PyramidPlayerController.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"

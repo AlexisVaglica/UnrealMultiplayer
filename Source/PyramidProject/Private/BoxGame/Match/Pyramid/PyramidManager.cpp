@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BoxGame/Manager/PyramidManager.h"
-#include "BoxGame/BoxNode.h"
+#include "BoxGame/Match/Pyramid/PyramidManager.h"
+#include "BoxGame/Match/Pyramid/BoxNode.h"
 
 APyramidManager::APyramidManager()
 {

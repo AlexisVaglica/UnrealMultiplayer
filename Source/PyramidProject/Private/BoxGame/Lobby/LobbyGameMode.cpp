@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BoxGame/HUD/Lobby/LobbyGameMode.h"
-#include "BoxGame/HUD/Lobby/LobbyPlayerController.h"
+#include "BoxGame/Lobby/LobbyGameMode.h"
+#include "BoxGame/Lobby/LobbyPlayerController.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameState.h"
