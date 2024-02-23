@@ -6,6 +6,7 @@
 #include "BoxGame/Match/Pyramid/PyramidManager.h"
 #include "BoxGame/Match/PyramidPlayerState.h"
 #include "BoxGame/Match/PyramidPlayerController.h"
+#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -107,12 +108,9 @@ void APyramidProjectGameMode::PostLogin(APlayerController* NewPlayer)
 
 	APyramidPlayerState* PlayerState = NewPlayer->GetPlayerState<APyramidPlayerState>();
 
-	if (PlayerState) 
+	if (PlayerState && LocalPlayerData)
 	{
-		FString NewName = "Player ";
-		int PlayerNum = PlayerList.Num() + 1;
-		NewName.Append(FString::FromInt(PlayerNum));
-
+		FString NewName = LocalPlayerData->LocalPlayerInfo.LocalName;
 		PlayerState->SetPlayerName(NewName);
 	}
 

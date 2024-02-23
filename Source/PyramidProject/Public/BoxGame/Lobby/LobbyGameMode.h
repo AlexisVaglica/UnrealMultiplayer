@@ -8,6 +8,7 @@
 
 class ULobbyWidget;
 class UMapSelectorCell;
+class ULocalPlayerDataAsset;
 class APlayerController;
 class ALobbyPlayerController;
 class UMultiplayerSessionSubsystem;
@@ -53,6 +54,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 MinNumberOfPlayerForStartMatch{ 2 };
+
+	UPROPERTY(EditAnywhere)
+	ULocalPlayerDataAsset* LocalPlayerData;
 
 	FLobbyGameInfo GameInfo;
 

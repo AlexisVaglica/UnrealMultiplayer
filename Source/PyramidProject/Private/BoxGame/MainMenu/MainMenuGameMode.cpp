@@ -4,11 +4,14 @@
 #include "BoxGame/MainMenu/MainMenuGameMode.h"
 #include "BoxGame/MainMenu/MainMenuWidget.h"
 #include "BoxGame/DataAssets/MapDataAsset.h"
+#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
+#include "BoxGame/Utils/ReadWriteJsonFile.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSessionSettings.h" 
 #include "GameFramework/PlayerState.h"
-#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
+#include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h" 	
+#include "UObject/Class.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -47,6 +50,12 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 	}
 
 	MainMenuWidget->SetMapGame(Maps, MapSelectorCellClass);
+
+	if (LocalPlayerData) 
+	{
+		FString PlayerName = LocalPlayerData->LocalPlayerInfo.LocalName;
+		MainMenuWidget->SetPlayerName(PlayerName);
+	}
 }
 
 void AMainMenuGameMode::ConfigureOnlineSubsystem()
@@ -68,6 +77,7 @@ void AMainMenuGameMode::ConfigureOnlineSubsystem()
 
 void AMainMenuGameMode::LaunchSoloGame(FString MapName)
 {
+	SavePlayerName();
 	UGameplayStatics::OpenLevel(GetWorld(), FName(MapName), true);
 }
 
@@ -75,6 +85,7 @@ void AMainMenuGameMode::LaunchHostGame()
 {
 	if (MultiplayerSession && MultiplayerData)
 	{
+		SavePlayerName();
 		MultiplayerSession->CreateSession(MultiplayerData);
 	}
 }
@@ -89,6 +100,8 @@ void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 {
 	if (MultiplayerSession) 
 	{
+		SavePlayerName();
+
 		MultiplayerSession->JoinSession(SessionId);
 		MainMenuWidget->ShowOrDismissGeneralMessage(true, JoinSessionMessage, false);
 	}
@@ -97,6 +110,24 @@ void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 void AMainMenuGameMode::QuitGame()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), 0, EQuitPreference::Quit, false);
+}
+
+void AMainMenuGameMode::SavePlayerName()
+{
+	if (LocalPlayerData) 
+	{
+		LocalPlayerData->LocalPlayerInfo.LocalName = MainMenuWidget->GetPlayerName();
+
+		const FLocalPlayerInfo* LocalPlayerInfo;
+
+		FString Path = FString(TEXT("C:/Users/zorro/Documents/UnrealProjects"));
+		bool bSuccess = false;
+		FString Message;
+
+		UReadWriteJsonFile::WriteJson(Path, LocalPlayerInfo, bSuccess, Message);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
+	}
 }
 
 void AMainMenuGameMode::ShowErrorMessage(FString ErrorMessage)

@@ -15,6 +15,7 @@ class USessionSearchCell;
 class UOverlay;
 class UTextBlock;
 class UCircularThrobber;
+class UEditableTextBox;
 
 DECLARE_DELEGATE(FOnButtonPressed);
 DECLARE_DELEGATE_OneParam(FOnEnterGameWithMap, FString);
@@ -97,6 +98,9 @@ private:
 	UOverlay* GeneralMessageOverlay;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UEditableTextBox* TextBoxPlayerName;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UCircularThrobber* SessionSearchLoader;
 
 	UPROPERTY()
@@ -117,6 +121,8 @@ public:
 	void ShowOrDismissGeneralMessage(bool IsShowing, FString NewText = TEXT("Waiting..."), bool IsButtonShowing = true);
 	void StartSessionSearch();
 	void StopSessionSearch();
+	void SetPlayerName(FString PlayerName);
+	FString GetPlayerName();
 
 protected:
 	virtual bool Initialize() override;

@@ -26,10 +26,7 @@ public:
 	UButton* BtnJoinSession;
 
 	UPROPERTY(meta = (BindWidgetOptional))
-	UTextBlock* TextId;
-
-	UPROPERTY(meta = (BindWidgetOptional))
-	UTextBlock* TextMapName;
+	UTextBlock* TextPlayerName;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	UTextBlock* TextPlayers;
@@ -39,7 +36,7 @@ private:
 
 public:
 	UFUNCTION()
-	void ConfigureCell(FString Id, int32 CurrentPlayersInSession, int32 MaxPlayersForSession);
+	void ConfigureCell(FString SessionId, FString PlayerName, int32 CurrentPlayersInSession, int32 MaxPlayersForSession);
 
 private:
 	UFUNCTION()

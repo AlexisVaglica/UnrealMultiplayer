@@ -196,6 +196,7 @@ void UMultiplayerSessionSubsystem::FindSessionComplete(bool bWasSuccess)
 
 		SessionGameInfo.SessionId = LastSessionSearch->SearchResults[i].GetSessionIdStr();
 		SessionGameInfo.OwnerId = LastSessionSearch->SearchResults[i].Session.OwningUserId.Get()->ToString();
+		SessionGameInfo.OwnerName = LastSessionSearch->SearchResults[i].Session.OwningUserName;
 
 		int32 MaxPlayers = LastSessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
 		int32 CurrentSpacesInSession = LastSessionSearch->SearchResults[i].Session.NumOpenPublicConnections;

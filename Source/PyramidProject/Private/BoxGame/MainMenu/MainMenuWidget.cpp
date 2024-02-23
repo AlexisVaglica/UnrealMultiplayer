@@ -14,6 +14,8 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Overlay.h"
 #include "Components/CircularThrobber.h"
+#include "Components/EditableTextBox.h"
+
 
 bool UMainMenuWidget::Initialize()
 {
@@ -211,6 +213,20 @@ TSharedRef<SWidget, ESPMode::ThreadSafe> UMainMenuWidget::GetWidgetPrt()
 	return TakeWidget();
 }
 
+void UMainMenuWidget::SetPlayerName(FString PlayerName)
+{
+	if (TextBoxPlayerName) 
+	{
+		FText PlayerNameText = FText::FromString(PlayerName);
+		TextBoxPlayerName->SetText(PlayerNameText);
+	}
+}
+
+FString UMainMenuWidget::GetPlayerName()
+{
+	return TextBoxPlayerName->GetText().ToString();
+}
+
 void UMainMenuWidget::SetMapGame(TMap<FString, UTexture2D*> NewMaps, TSubclassOf<UMapSelectorCell> MapCellClass)
 {
 	if (NewMaps.Num() > 0)
@@ -258,7 +274,7 @@ void UMainMenuWidget::CreateSessionResultCell(FSessionGameInfo SessionInfo, TSub
 	if (SessionSearchVBox)
 	{
 		USessionSearchCell* SessionCellWidget = CreateWidget<USessionSearchCell>(this, SessionCellClass);
-		SessionCellWidget->ConfigureCell(SessionInfo.SessionId, SessionInfo.CurrentPlayersCount, SessionInfo.MaxPlayersCount);
+		SessionCellWidget->ConfigureCell(SessionInfo.SessionId, SessionInfo.OwnerName, SessionInfo.CurrentPlayersCount, SessionInfo.MaxPlayersCount);
 		SessionCellWidget->OnSessionSelected.BindUObject(this, &ThisClass::SessionSelected);
 		SessionSearchVBox->AddChildToVerticalBox(SessionCellWidget);
 

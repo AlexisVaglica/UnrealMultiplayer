@@ -14,6 +14,7 @@ struct FSessionGameInfo
 
 	FString SessionId;
 	FString OwnerId;
+	FString OwnerName;
 	int32 CurrentPlayersCount;
 	int32 MaxPlayersCount;
 };

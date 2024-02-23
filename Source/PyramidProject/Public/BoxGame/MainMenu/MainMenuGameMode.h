@@ -9,6 +9,7 @@
 
 class UMainMenuWidget;
 class UMapDataAsset;
+class ULocalPlayerDataAsset;
 class UMapSelectorCell;
 class USessionSearchCell;
 class UMultiplayerSessionSubsystem;
@@ -40,6 +41,9 @@ private:
 	TArray<UMapDataAsset*> MapData;
 
 	UPROPERTY(EditAnywhere)
+	ULocalPlayerDataAsset* LocalPlayerData;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
 
 	UPROPERTY(EditAnywhere)
@@ -69,6 +73,8 @@ protected:
 private:
 	void ConfigureMainMenuWidget();
 	void ConfigureOnlineSubsystem();
+	void SavePlayerName();
+
 	void LaunchHostGame();
 	void LaunchSoloGame(FString MapName);
 	void RefreshGameList();

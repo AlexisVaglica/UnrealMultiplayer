@@ -3,6 +3,7 @@
 
 #include "BoxGame/Lobby/LobbyGameMode.h"
 #include "BoxGame/Lobby/LobbyPlayerController.h"
+#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameState.h"
@@ -38,6 +39,13 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
+	APlayerState* JoiningPlayerState = JoiningPlayer->GetPlayerState<APlayerState>();
+
+	if (JoiningPlayerState && LocalPlayerData)
+	{
+		FString PlayerInfoName = LocalPlayerData->LocalPlayerInfo.LocalName;
+		JoiningPlayerState->SetPlayerName(PlayerInfoName);
+	}
 
 	if (JoiningPlayer)
 	{
@@ -66,6 +74,7 @@ void ALobbyGameMode::UpdatePlayerList()
 	{
 		FLobbyPlayerInfo TempLobbyPlayerInfo;
 		TempLobbyPlayerInfo.bPlayerReadyState = Player->IsPlayerReady();
+		TempLobbyPlayerInfo.PlayerName = Player->GetPlayerState<APlayerState>()->GetPlayerName();
 		PlayerInfoArray.Add(TempLobbyPlayerInfo);
 	}
 

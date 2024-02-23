@@ -8,8 +8,21 @@ public class PyramidProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "UMG", "MultiplayerSession" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"HeadMountedDisplay",
+			"UMG",
+            "MultiplayerSession",
+            "Json",
+            "JsonUtilities"
+        });
 
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+        PrivateDependencyModuleNames.AddRange(new string[] { 
+			"Slate",
+			"SlateCore"
+        });
     }
 }

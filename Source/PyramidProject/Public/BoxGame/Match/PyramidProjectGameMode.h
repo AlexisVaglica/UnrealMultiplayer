@@ -8,6 +8,7 @@
 
 class APyramidProjectCharacter;
 class APyramidManager;
+class ULocalPlayerDataAsset;
 class UMultiplayerSessionSubsystem;
 
 UCLASS(minimalapi)
@@ -32,6 +33,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APyramidManager> PyramidSpawnerClass;
+
+	UPROPERTY(EditAnywhere)
+	ULocalPlayerDataAsset* LocalPlayerData;
 
 	UPROPERTY()
 	APyramidManager* PyramidManager;
