@@ -3,16 +3,18 @@
 
 #include "BoxGame/Utils/ReadWriteJsonFile.h"
 #include "BoxGame/Utils/ReadWriteFile.h"
+#include "BoxGame/Utils/JsonWriteableReadable.h"
 #include "Serialization/JsonSerializer.h"
 #include "JsonObjectConverter.h"
 
-UScriptStruct* UReadWriteJsonFile::ReadJson(FString JsonPath, bool& bSuccess, FString& OutInfoMessage)
+void UReadWriteJsonFile::ReadJson(FString JsonPath, bool& bSuccess, FString& OutInfoMessage, IJsonWriteableReadable* OutObject)
 {
 	FString JsonString = UReadWriteFile::ReadStringFromFile(JsonPath, bSuccess, OutInfoMessage);
 
 	if (!bSuccess)
 	{
-		return nullptr;
+		OutInfoMessage = FString(TEXT("Read Json Failed - Object was not found"));
+		return;
 	}
 
 	TSharedPtr<FJsonObject> JsonObject;
@@ -21,27 +23,24 @@ UScriptStruct* UReadWriteJsonFile::ReadJson(FString JsonPath, bool& bSuccess, FS
 	{
 		bSuccess = false;
 		OutInfoMessage = FString(TEXT("Read Json Failed - Was not able to deserialize json string"));
-		return nullptr;
+		return;
 	}
 
-	UScriptStruct* ResultObject = ThisClass::JsonToObject(JsonObject);
+	bSuccess = OutObject->ConvertJsonObjectToData(JsonObject);
 
-	if (ResultObject == nullptr)
+	if (!bSuccess)
 	{
-		bSuccess = false;
 		OutInfoMessage = FString(TEXT("Read Json Failed - Was not able to create Object from json"));
-		return nullptr;
+		return;
 	}
 
 	bSuccess = true;
-	OutInfoMessage = FString(TEXT("Read Json Succeded!"));
-
-	return ResultObject;
+	OutInfoMessage = FString::Printf(TEXT("Read Json Succeded! Path: %s"), *JsonPath);
 }
 
-void UReadWriteJsonFile::WriteJson(FString JsonPath, const UScriptStruct* ObjectToSave, bool& bSuccess, FString& OutInfoMessage)
+void UReadWriteJsonFile::WriteJson(FString JsonPath, IJsonWriteableReadable* ObjectToSave, bool& bSuccess, FString& OutInfoMessage)
 {
-	TSharedPtr<FJsonObject> JsonObject = ThisClass::ObjectToJson(ObjectToSave);
+	TSharedPtr<FJsonObject> JsonObject = ObjectToSave->ConvertDataToJsonObject();
 
 	if (JsonObject == nullptr)
 	{
@@ -67,23 +66,5 @@ void UReadWriteJsonFile::WriteJson(FString JsonPath, const UScriptStruct* Object
 	}
 
 	bSuccess = true;
-	OutInfoMessage = FString(TEXT("Write Json Succeded!"));
-}
-
-UScriptStruct* UReadWriteJsonFile::JsonToObject(TSharedPtr<FJsonObject> JsonObject)
-{
-	UScriptStruct* ResultObject;
-
-	if (!FJsonObjectConverter::JsonObjectToUStruct<UScriptStruct*>(JsonObject.ToSharedRef(), &ResultObject))
-	{
-		return nullptr;
-	}
-
-	return nullptr;
-}
-
-TSharedPtr<FJsonObject> UReadWriteJsonFile::ObjectToJson(const UScriptStruct* Object)
-{
-	auto JsonObject = FJsonObjectConverter::UStructToJsonObject(Object);
-	return JsonObject.ToSharedRef();
+	OutInfoMessage = FString::Printf(TEXT("Write Json Succeded! Path: %s"), *JsonPath);
 }

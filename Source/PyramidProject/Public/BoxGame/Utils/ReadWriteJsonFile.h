@@ -7,6 +7,7 @@
 #include "ReadWriteJsonFile.generated.h"
 
 class FJsonObject;
+class IJsonWriteableReadable;
 
 /**
  * 
@@ -17,10 +18,7 @@ class PYRAMIDPROJECT_API UReadWriteJsonFile : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	static UScriptStruct* ReadJson(FString JsonPath, bool& bSuccess, FString& OutInfoMessage);
-	static void WriteJson(FString JsonPath, const UScriptStruct* ObjectToSave, bool& bSuccess, FString& OutInfoMessage);
-
-private:
-	static UScriptStruct* JsonToObject(TSharedPtr<FJsonObject> JsonObject);
-	static TSharedPtr<FJsonObject> ObjectToJson(const UScriptStruct* Object);
+	static void ReadJson(FString JsonPath, bool& bSuccess, FString& OutInfoMessage, IJsonWriteableReadable* OutObject);
+	static void WriteJson(FString JsonPath, IJsonWriteableReadable* ObjectToSave, bool& bSuccess, FString& OutInfoMessage);
 };
+
