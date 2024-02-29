@@ -6,7 +6,8 @@
 #include "BoxGame/Match/Pyramid/PyramidManager.h"
 #include "BoxGame/Match/PyramidPlayerState.h"
 #include "BoxGame/Match/PyramidPlayerController.h"
-#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
+#include "BoxGame/Utils/ReadWriteJsonFile.h"
+#include "BoxGame/Utils/PlayerSettings.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
@@ -28,6 +29,21 @@ void APyramidProjectGameMode::BeginPlay() {
 
 	ConfigurePyramidManager();
 	ConfigureOnlineSubsystem();
+}
+
+void APyramidProjectGameMode::ConfigurePlayerSettings()
+{
+	PlayerSettings = NewObject<UPlayerSettings>();
+
+	if (PlayerSettings)
+	{
+		bool bSuccess = false;
+		FString Message;
+
+		UReadWriteJsonFile::ReadJson(PlayerSettings->PlayerSettingsPath, bSuccess, Message, PlayerSettings);
+
+		UE_LOG(LogTemp, Warning, TEXT("APyramidProjectGameMode - ConfigurePlayerSettings: %s"), *Message);
+	}
 }
 
 void APyramidProjectGameMode::ConfigureOnlineSubsystem()
@@ -108,9 +124,11 @@ void APyramidProjectGameMode::PostLogin(APlayerController* NewPlayer)
 
 	APyramidPlayerState* PlayerState = NewPlayer->GetPlayerState<APyramidPlayerState>();
 
-	if (PlayerState && LocalPlayerData)
+	ConfigurePlayerSettings();
+
+	if (PlayerState && PlayerSettings)
 	{
-		FString NewName = LocalPlayerData->LocalPlayerInfo.LocalName;
+		FString NewName = PlayerSettings->LocalPlayerInfo.LocalName;
 		PlayerState->SetPlayerName(NewName);
 	}
 

@@ -9,12 +9,12 @@
 
 class UMainMenuWidget;
 class UMapDataAsset;
-class ULocalPlayerDataAsset;
 class UMapSelectorCell;
 class USessionSearchCell;
 class UMultiplayerSessionSubsystem;
 class UMultiplayerDataAsset;
 class FOnlineSessionSearchResult;
+class UPlayerSettings;
 
 /**
  * 
@@ -40,8 +40,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	TArray<UMapDataAsset*> MapData;
 
-	UPROPERTY(EditAnywhere)
-	ULocalPlayerDataAsset* LocalPlayerData;
+	//UPROPERTY(EditAnywhere)
+	//ULocalPlayerDataAsset* LocalPlayerData;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
@@ -67,10 +67,14 @@ private:
 	UPROPERTY()
 	UMultiplayerSessionSubsystem* MultiplayerSession;
 
+	UPROPERTY()
+	UPlayerSettings* PlayerSettings;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	void ConfigurePlayerSettings();
 	void ConfigureMainMenuWidget();
 	void ConfigureOnlineSubsystem();
 	void SavePlayerName();

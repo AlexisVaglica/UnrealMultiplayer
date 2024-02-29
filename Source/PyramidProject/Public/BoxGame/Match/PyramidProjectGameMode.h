@@ -8,8 +8,8 @@
 
 class APyramidProjectCharacter;
 class APyramidManager;
-class ULocalPlayerDataAsset;
 class UMultiplayerSessionSubsystem;
+class UPlayerSettings;
 
 UCLASS(minimalapi)
 class APyramidProjectGameMode : public AGameMode
@@ -34,8 +34,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APyramidManager> PyramidSpawnerClass;
 
-	UPROPERTY(EditAnywhere)
-	ULocalPlayerDataAsset* LocalPlayerData;
+	UPROPERTY()
+	UPlayerSettings* PlayerSettings;
 
 	UPROPERTY()
 	APyramidManager* PyramidManager;
@@ -50,6 +50,7 @@ protected:
 private:
 	void ChangePlayerScore(int32 BoxCount, AActor* DamagePlayer);
 	void GameOver();
+	void ConfigurePlayerSettings();
 	void ConfigureOnlineSubsystem();
 	void ConfigurePyramidManager();
 

@@ -4,14 +4,13 @@
 #include "BoxGame/MainMenu/MainMenuGameMode.h"
 #include "BoxGame/MainMenu/MainMenuWidget.h"
 #include "BoxGame/DataAssets/MapDataAsset.h"
-#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
 #include "BoxGame/Utils/ReadWriteJsonFile.h"
+#include "BoxGame/Utils/PlayerSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSessionSettings.h" 
 #include "GameFramework/PlayerState.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h" 	
-#include "UObject/Class.h"
 
 void AMainMenuGameMode::BeginPlay() 
 {
@@ -21,8 +20,24 @@ void AMainMenuGameMode::BeginPlay()
 	MainMenuWidget->AddToViewport();
 	MainMenuWidget->SetIsFocusable(true);
 
+	ConfigurePlayerSettings();
 	ConfigureMainMenuWidget();
 	ConfigureOnlineSubsystem();
+}
+
+void AMainMenuGameMode::ConfigurePlayerSettings()
+{
+	PlayerSettings = NewObject<UPlayerSettings>();
+
+	if (PlayerSettings)
+	{
+		bool bSuccess = false;
+		FString Message;
+
+		UReadWriteJsonFile::ReadJson(PlayerSettings->PlayerSettingsPath, bSuccess, Message, PlayerSettings);
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
+	}
 }
 
 void AMainMenuGameMode::ConfigureMainMenuWidget()
@@ -51,9 +66,9 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 
 	MainMenuWidget->SetMapGame(Maps, MapSelectorCellClass);
 
-	if (LocalPlayerData) 
+	if (PlayerSettings) 
 	{
-		FString PlayerName = LocalPlayerData->LocalPlayerInfo.LocalName;
+		FString PlayerName = PlayerSettings->LocalPlayerInfo.LocalName;
 		MainMenuWidget->SetPlayerName(PlayerName);
 	}
 }
@@ -114,17 +129,14 @@ void AMainMenuGameMode::QuitGame()
 
 void AMainMenuGameMode::SavePlayerName()
 {
-	if (LocalPlayerData) 
+	if (PlayerSettings)
 	{
-		LocalPlayerData->LocalPlayerInfo.LocalName = MainMenuWidget->GetPlayerName();
+		PlayerSettings->LocalPlayerInfo.LocalName = MainMenuWidget->GetPlayerName();
 
-		const FLocalPlayerInfo* LocalPlayerInfo;
-
-		FString Path = FString(TEXT("C:/Users/zorro/Documents/UnrealProjects"));
 		bool bSuccess = false;
 		FString Message;
 
-		UReadWriteJsonFile::WriteJson(Path, LocalPlayerInfo, bSuccess, Message);
+		UReadWriteJsonFile::WriteJson(PlayerSettings->PlayerSettingsPath, PlayerSettings, bSuccess, Message);
 
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
 	}

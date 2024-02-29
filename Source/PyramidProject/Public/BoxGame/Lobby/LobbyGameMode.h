@@ -8,10 +8,10 @@
 
 class ULobbyWidget;
 class UMapSelectorCell;
-class ULocalPlayerDataAsset;
 class APlayerController;
 class ALobbyPlayerController;
 class UMultiplayerSessionSubsystem;
+class UPlayerSettings;
 
 USTRUCT()
 struct FLobbyPlayerInfo
@@ -55,8 +55,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 MinNumberOfPlayerForStartMatch{ 2 };
 
-	UPROPERTY(EditAnywhere)
-	ULocalPlayerDataAsset* LocalPlayerData;
+	UPROPERTY()
+	UPlayerSettings* PlayerSettings;
 
 	FLobbyGameInfo GameInfo;
 
@@ -78,6 +78,7 @@ protected:
 	virtual void Logout(AController* ExitingPlayer) override;
 
 private:
+	void ConfigurePlayerSettings();
 	void ConfigureOnlineSubsystem();
 	void UpdatePlayerList();
 

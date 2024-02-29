@@ -3,7 +3,8 @@
 
 #include "BoxGame/Lobby/LobbyGameMode.h"
 #include "BoxGame/Lobby/LobbyPlayerController.h"
-#include "BoxGame/DataAssets/LocalPlayerDataAsset.h"
+#include "BoxGame/Utils/ReadWriteJsonFile.h"
+#include "BoxGame/Utils/PlayerSettings.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameState.h"
@@ -12,7 +13,23 @@
 
 void ALobbyGameMode::BeginPlay()
 {
+	Super::BeginPlay();
 	ConfigureOnlineSubsystem();
+}
+
+void ALobbyGameMode::ConfigurePlayerSettings()
+{
+	PlayerSettings = NewObject<UPlayerSettings>();
+
+	if (PlayerSettings)
+	{
+		bool bSuccess = false;
+		FString Message;
+
+		UReadWriteJsonFile::ReadJson(PlayerSettings->PlayerSettingsPath, bSuccess, Message, PlayerSettings);
+
+		UE_LOG(LogTemp, Warning, TEXT("ALobbyGameMode - ConfigurePlayerSettings: %s"), *Message);
+	}
 }
 
 void ALobbyGameMode::ConfigureOnlineSubsystem()
@@ -41,9 +58,11 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	ALobbyPlayerController* JoiningPlayer = Cast<ALobbyPlayerController>(NewPlayer);
 	APlayerState* JoiningPlayerState = JoiningPlayer->GetPlayerState<APlayerState>();
 
-	if (JoiningPlayerState && LocalPlayerData)
+	ConfigurePlayerSettings();
+
+	if (JoiningPlayerState && PlayerSettings)
 	{
-		FString PlayerInfoName = LocalPlayerData->LocalPlayerInfo.LocalName;
+		FString PlayerInfoName = PlayerSettings->LocalPlayerInfo.LocalName;
 		JoiningPlayerState->SetPlayerName(PlayerInfoName);
 	}
 
