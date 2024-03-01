@@ -7,6 +7,12 @@
 
 void APyramidPlayerState::SetFibonacciScore(float ScoreDelta)
 {
+	float Result = GetScore() + GetAddedScore(ScoreDelta);
+	SetScore(Result);
+}
+
+float APyramidPlayerState::GetAddedScore(float ScoreDelta)
+{
 	int TermA = 0;
 	int TermB = 1;
 	for (int TermIdx = 0; TermIdx < ScoreDelta; TermIdx++)
@@ -16,8 +22,7 @@ void APyramidPlayerState::SetFibonacciScore(float ScoreDelta)
 		TermB = NextTerm;
 	}
 
-	float Result = GetScore() + TermB;
-	SetScore(Result);
+	return TermB;
 }
 
 void APyramidPlayerState::OnRep_Score()

@@ -60,8 +60,14 @@ void APyramidPlayerController::MulticastChangeScore_Implementation(int BoxCount)
 
 void APyramidPlayerController::ChangeScoreInHUD_Implementation(int BoxCount)
 {
-	float CurrentScore = PlayerState->GetScore();
-	CurrentHUD->SetScorePoints(CurrentScore);
+	APyramidPlayerState* CurrentPlayerState = Cast<APyramidPlayerState>(PlayerState);
+
+	if (CurrentPlayerState) 
+	{
+		float CurrentScore = CurrentPlayerState->GetScore();
+		float GetAddedScore = CurrentPlayerState->GetAddedScore((float)BoxCount);
+		CurrentHUD->SetScorePoints(CurrentScore, GetAddedScore);
+	}
 }
 
 void APyramidPlayerController::ChangeToGameOver_Implementation(const TArray<APlayerState*>& PlayerList)

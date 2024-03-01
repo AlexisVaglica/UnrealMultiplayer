@@ -4,18 +4,12 @@
 #include "BoxGame/Match/PyramidPlayerState.h"
 #include "BoxGame/Match/PyramidProjectGameMode.h"
 #include "BoxGame/Match/Score/ScoreCellWidget.h"
-#include "Engine/Canvas.h"
-#include "Engine/Texture2D.h"
-#include "Blueprint/UserWidget.h"
-#include "UObject/ConstructorHelpers.h"
-#include "Components/TextBlock.h"
-#include "Components/VerticalBox.h"
-#include "Components/Button.h"
-#include "Components/Image.h"
-#include "GameFramework/GameState.h"
+#include "BoxGame/Match/BoxMatchPlayerWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "CanvasItem.h"
 #include "TextureResource.h"
+#include "Engine/Canvas.h"
+#include "Engine/Texture2D.h"
 
 APyramidProjectHUD::APyramidProjectHUD()
 {
@@ -52,47 +46,22 @@ void APyramidProjectHUD::ConfigureWidget()
 {
 	if (UserWidgetClass)
 	{
-		UserWidget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
+		UserWidget = CreateWidget<UBoxMatchPlayerWidget>(GetWorld(), UserWidgetClass);
 
 		if (UserWidget)
 		{
 			UserWidget->AddToViewport();
+			UserWidget->ConfigureWidget(IsPlayerAuthority());
 
-			DisplayText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextScoreName));
-			GameoverText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextGameoverName));
-			PlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextPlayerName));
-			WinPlayerNameText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextWinPlayerName));
-			NotifyText = Cast<UTextBlock>(UserWidget->GetWidgetFromName(TextNotifyName));
-			ResetButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonResetName));
-			BackMainMenuButton = Cast<UButton>(UserWidget->GetWidgetFromName(ButtonMainMenuName));
-
-			ShootBarImage = Cast<UImage>(UserWidget->GetWidgetFromName(ShootBarName));
-
-			VBScoreboard = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(ScoreboardName));
-			VBButtons = Cast<UVerticalBox>(UserWidget->GetWidgetFromName(VerticalBoxName));
-
-			NotifyText->SetVisibility(ESlateVisibility::Hidden);
-			GameoverText->SetVisibility(ESlateVisibility::Hidden);
-			VBButtons->SetVisibility(ESlateVisibility::Hidden);
-			ShootBarImage->SetVisibility(ESlateVisibility::Hidden);
-
-			if (IsPlayerAuthority())
+			if(IsPlayerAuthority()) 
 			{
-				ResetButton->OnClicked.AddDynamic(this, &ThisClass::ResetButtonPressed);
-				BackMainMenuButton->OnClicked.AddDynamic(this, &ThisClass::BackMainMenuButtonPressed);
+				UserWidget->ResetOnButtonPressed.BindUObject(this, &ThisClass::ServerResetGame);
+				UserWidget->BackMainMenuOnButtonPressed.BindUObject(this, &ThisClass::ServerBackMainMenuGame);
 			}
 
-			SetScorePoints(0);
+			SetScorePoints(0, 0, false);
 		}
 	}
-}
-
-void APyramidProjectHUD::SetNotify(bool IsVisible, FString NotifyString)
-{
-	ESlateVisibility VisibilityType = IsVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-	NotifyText->SetVisibility(VisibilityType);
-	FText NewNotify = FText::FromString(NotifyString);
-	NotifyText->SetText(NewNotify);
 }
 
 bool APyramidProjectHUD::IsPlayerAuthority()
@@ -102,133 +71,74 @@ bool APyramidProjectHUD::IsPlayerAuthority()
 
 void APyramidProjectHUD::DisplayPlayerName()
 {
-	auto CurrentPS = GetOwningPlayerController()->GetPlayerState<APyramidPlayerState>();
-	if (CurrentPS)
+	APyramidPlayerState* CurrentPS = GetOwningPlayerController()->GetPlayerState<APyramidPlayerState>();
+
+	if (UserWidget && CurrentPS)
 	{
-		if (PlayerNameText)
-		{
-			FString DisplayName = CurrentPS->GetPlayerName();
-			FText NewPlayerNameText = FText::FromString(DisplayName);
-			PlayerNameText->SetText(NewPlayerNameText);
-		}
+		UserWidget->DisplayPlayerName(CurrentPS->GetPlayerName());
 	}
 }
 
-void APyramidProjectHUD::SetScorePoints(float ScorePoint) 
+void APyramidProjectHUD::SetScorePoints(float ScorePoint, float ScoreAdded, bool ShowScoreAdded)
 {
-	if (DisplayText) 
+	if (UserWidget) 
 	{
-		FString ScoreString = "Score: ";
-		ScoreString.Append(FString::FromInt((int)ScorePoint));
-		FText ScoreText = FText::FromString(ScoreString);
-		DisplayText->SetText(ScoreText);
+		UserWidget->SetScorePoints(ScorePoint, ScoreAdded, ShowScoreAdded);
 	}
 }
 
 void APyramidProjectHUD::SetGameOverVisibility(const TArray<APlayerState*>& PlayerList)
 {
-	if (GameoverText) 
+	if (UserWidget) 
 	{
-		GameoverText->SetVisibility(ESlateVisibility::Visible);
+		TArray<FPlayerWidgetInfo> NewPlayerList;
+
+		for (APlayerState* Player : PlayerList) 
+		{
+			FPlayerWidgetInfo NewPlayerWidgetInfo;
+			NewPlayerWidgetInfo.PlayerName = Player->GetPlayerName();
+			NewPlayerWidgetInfo.Score = Player->GetScore();
+			NewPlayerList.Add(NewPlayerWidgetInfo);
+		}
+
+		UserWidget->SetGameOverVisibility(NewPlayerList, IsPlayerAuthority(), ScoreCellWidgetClass);
 	}
-
-	if (IsPlayerAuthority()) 
-	{
-		VBButtons->SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		SetNotify(true, WaitNotify);
-	}
-
-	for(APlayerState* PlayerState : PlayerList)
-	{
-		FString PlayerName = PlayerState->GetPlayerName();
-		float Score = PlayerState->GetScore();
-		CreateScoreboardCell(PlayerName, Score);
-	}
-
-	if (WinPlayerNameText)
-	{
-		WinPlayerNameText->SetVisibility(ESlateVisibility::Visible);
-		FString PlayerName = PlayerList[0]->GetPlayerName();
-		FString WinPlayerString = FString::Printf(TEXT("%s Win"), *PlayerName);
-		FText WinPlayerText = FText::FromString(WinPlayerString);
-		WinPlayerNameText->SetText(WinPlayerText);
-	}
-}
-
-void APyramidProjectHUD::CreateScoreboardCell(FString PlayerName, int ScorePoints)
-{
-	if (!VBScoreboard) 
-	{
-		return;
-	}
-
-	UScoreCellWidget* NewScoreCell = CreateWidget<UScoreCellWidget>(GetWorld(), ScoreCellWidgetClass);
-
-	ScoreCells.Add(PlayerName, NewScoreCell);
-
-	VBScoreboard->AddChildToVerticalBox(NewScoreCell);
-
-	ConfigureScoreCell(NewScoreCell, PlayerName, ScorePoints);
 }
 
 void APyramidProjectHUD::UpdatePlayerScore(FString PlayerName, float Score)
 {
-	if (ScoreCells.Num() > 0)
+	if (UserWidget) 
 	{
-		UScoreCellWidget* CurrentCell = ScoreCells[PlayerName];
-		ConfigureScoreCell(CurrentCell, PlayerName, Score);
+		UserWidget->UpdatePlayerScore(PlayerName, Score);
 	}
 }
 
 void APyramidProjectHUD::StartShootBar(float Time)
 {
-	ShootBarImage->SetVisibility(ESlateVisibility::Visible);
-
-	if(ShootBarMaterial == nullptr)
+	if (UserWidget)
 	{
-		ShootBarMaterial = ShootBarImage->GetDynamicMaterial();
+		UserWidget->StartShootBar(Time);
 	}
-
-	ShootBarMaterial->SetScalarParameterValue(FName(DecimalParamName), 0.f);
-
-	MaxTimeToReloadBar = Time;
-	CurrentTimeToReload = 0.f;
-	ShootBarDecimal = 0.f;
-	bShootBarStarting = true;
 }
 
 void APyramidProjectHUD::StopShootBar()
 {
-	ShootBarImage->SetVisibility(ESlateVisibility::Hidden);
-	bShootBarStarting = false;
+	if (UserWidget)
+	{
+		UserWidget->StopShootBar();
+	}
 }
 
 void APyramidProjectHUD::Tick(float TimeDelta)
 {
-	if (bShootBarStarting && ShootBarDecimal < ShootBarMaxDecimal && ShootBarMaterial)
+	if (UserWidget)
 	{
-		CurrentTimeToReload += TimeDelta;
-		ShootBarDecimal = ShootBarMaxDecimal * (CurrentTimeToReload / MaxTimeToReloadBar);
-		ShootBarMaterial->SetScalarParameterValue(FName(DecimalParamName), ShootBarDecimal);
+		UserWidget->ShootBarTick(TimeDelta);
 	}
 }
 
-void APyramidProjectHUD::ConfigureScoreCell(UScoreCellWidget* ScoreCell, FString& PlayerName, int ScorePoints)
+void APyramidProjectHUD::ServerResetGame_Implementation()
 {
-	if (ScoreCell != nullptr)
-	{
-		ScoreCell->SetupCell(PlayerName, ScorePoints);
-	}
-}
-
-void APyramidProjectHUD::ResetButtonPressed_Implementation()
-{
-	VBButtons->SetVisibility(ESlateVisibility::Hidden);
-	SetNotify(true, RestartingNotify);
-
 	APyramidProjectGameMode* CurrentGameMode = Cast<APyramidProjectGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (CurrentGameMode) 
 	{
@@ -236,11 +146,8 @@ void APyramidProjectHUD::ResetButtonPressed_Implementation()
 	}
 }
 
-void APyramidProjectHUD::BackMainMenuButtonPressed_Implementation()
+void APyramidProjectHUD::ServerBackMainMenuGame_Implementation()
 {
-	VBButtons->SetVisibility(ESlateVisibility::Hidden);
-	SetNotify(true, BackToMainMenuNotify);
-	
 	APyramidProjectGameMode* CurrentGameMode = Cast<APyramidProjectGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (CurrentGameMode)
 	{
