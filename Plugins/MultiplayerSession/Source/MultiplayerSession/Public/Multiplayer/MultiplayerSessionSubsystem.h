@@ -47,6 +47,8 @@ private:
 	bool bCreateSessionOnDestroy{ false };
 	UMultiplayerDataAsset* LastDataAsset;
 
+	const FName SessionNameKey = FName("SESSION_NAME");
+
 public:
 	UMultiplayerSessionSubsystem();
 

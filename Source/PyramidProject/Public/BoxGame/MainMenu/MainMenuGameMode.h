@@ -40,9 +40,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	TArray<UMapDataAsset*> MapData;
 
-	//UPROPERTY(EditAnywhere)
-	//ULocalPlayerDataAsset* LocalPlayerData;
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMapSelectorCell> MapSelectorCellClass;
 

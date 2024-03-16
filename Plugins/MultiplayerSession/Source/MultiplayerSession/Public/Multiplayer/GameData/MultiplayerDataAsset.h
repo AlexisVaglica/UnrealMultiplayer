@@ -26,5 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Game Data")
 	TSoftObjectPtr<UTexture2D> MapImage;
+
+	FString SessionName = FString(TEXT("Box Game"));
 	bool IsLanMatch;
 };

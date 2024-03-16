@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSessionSettings.h" 
 #include "GameFramework/PlayerState.h"
+#include "Multiplayer/GameData/MultiplayerDataAsset.h"
 #include "MultiplayerSession/Public/Multiplayer/MultiplayerSessionSubsystem.h" 	
 
 void AMainMenuGameMode::BeginPlay() 
@@ -101,6 +102,12 @@ void AMainMenuGameMode::LaunchHostGame()
 	if (MultiplayerSession && MultiplayerData)
 	{
 		SavePlayerName();
+
+		if (PlayerSettings) 
+		{
+			MultiplayerData->SessionName = PlayerSettings->LocalPlayerInfo.LocalName;
+		}
+
 		MultiplayerSession->CreateSession(MultiplayerData);
 	}
 }

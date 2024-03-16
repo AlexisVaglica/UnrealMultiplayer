@@ -194,9 +194,11 @@ void UMultiplayerSessionSubsystem::FindSessionComplete(bool bWasSuccess)
 	{
 		FSessionGameInfo SessionGameInfo;
 
+		FString SessionName = LastSessionSearch->SearchResults[i].Session.SessionSettings.Settings.FindRef(SessionNameKey).Data.ToString();
+
 		SessionGameInfo.SessionId = LastSessionSearch->SearchResults[i].GetSessionIdStr();
 		SessionGameInfo.OwnerId = LastSessionSearch->SearchResults[i].Session.OwningUserId.Get()->ToString();
-		SessionGameInfo.OwnerName = LastSessionSearch->SearchResults[i].Session.OwningUserName;
+		SessionGameInfo.OwnerName = SessionName;
 
 		int32 MaxPlayers = LastSessionSearch->SearchResults[i].Session.SessionSettings.NumPublicConnections;
 		int32 CurrentSpacesInSession = LastSessionSearch->SearchResults[i].Session.NumOpenPublicConnections;
@@ -264,7 +266,7 @@ void UMultiplayerSessionSubsystem::ConfigureSessionSettings(UMultiplayerDataAsse
 	SessionSettings = MakeShareable(new FOnlineSessionSettings());
 	SessionSettings->NumPublicConnections = DataAsset->MaxPlayersCount;
 	SessionSettings->NumPrivateConnections = DataAsset->MaxPlayersCount;
-	SessionSettings->bIsLANMatch = SubsystemName == NullName;
+	SessionSettings->bIsLANMatch = DataAsset->IsLanMatch || SubsystemName == NullName;
 	SessionSettings->bIsDedicated = false;
 	SessionSettings->bAllowJoinInProgress = true;
 	SessionSettings->bAllowJoinViaPresence = true;
@@ -272,5 +274,7 @@ void UMultiplayerSessionSubsystem::ConfigureSessionSettings(UMultiplayerDataAsse
 	SessionSettings->bShouldAdvertise = true;
 	SessionSettings->bUsesPresence = true;
 	SessionSettings->bAllowInvites = true;
-	SessionSettings->Set(FName("MatchType"), DataAsset->GameTypeName.ToString(), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
+	FOnlineSessionSetting SessionNameSetting = FOnlineSessionSetting(DataAsset->SessionName, EOnlineDataAdvertisementType::ViaOnlineService);
+	SessionSettings->Settings.Add(SessionNameKey, SessionNameSetting);
 }
