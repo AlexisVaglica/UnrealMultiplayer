@@ -48,14 +48,13 @@ void AMainMenuGameMode::ConfigureMainMenuWidget()
 		return;
 	}
 
-	//ToDo: Add an IF for change Lan or Steam
-
 	MainMenuWidget->OnLaunchButtonPressed.BindUObject(this, &ThisClass::LaunchSoloGame);
 	MainMenuWidget->OnExitGameButtonPressed.BindUObject(this, &ThisClass::QuitGame);
 	MainMenuWidget->OnHostButtonPressed.BindUObject(this, &ThisClass::LaunchHostGame);
 	MainMenuWidget->OnRefreshButtonPressed.BindUObject(this, &ThisClass::RefreshGameList);
 	MainMenuWidget->OnSearchButtonPressed.BindUObject(this, &ThisClass::RefreshGameList);
 	MainMenuWidget->OnJoinButtonPressed.BindUObject(this, &ThisClass::JoinSessionGame);
+	MainMenuWidget->OnConnectionButtonPressed.BindUObject(this, &ThisClass::ChangeConnection);
 
 	TMap<FString, UTexture2D*> Maps;
 
@@ -126,6 +125,23 @@ void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 
 		MultiplayerSession->JoinSession(SessionId);
 		MainMenuWidget->ShowOrDismissGeneralMessage(true, JoinSessionMessage, false);
+	}
+}
+
+void AMainMenuGameMode::ChangeConnection()
+{
+	if (MultiplayerData && MultiplayerSession) 
+	{
+		if (MultiplayerData->IsLanMatch) 
+		{
+			MultiplayerData->IsLanMatch = false;
+			MainMenuWidget->ChangeConnectionType(false);
+		}
+		else
+		{
+			MultiplayerData->IsLanMatch = true;
+			MainMenuWidget->ChangeConnectionType(true);
+		}
 	}
 }
 

@@ -47,6 +47,9 @@ private:
 	UTextBlock* CurrentSessionText;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UTextBlock* ConnectionText;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UButton* BtnSoloGame;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -122,6 +125,7 @@ public:
 	void StartSessionSearch();
 	void StopSessionSearch();
 	void SetPlayerName(FString PlayerName);
+	void ChangeConnectionType(bool bIsLan);
 	FString GetPlayerName();
 
 protected:

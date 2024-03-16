@@ -303,6 +303,16 @@ void UMainMenuWidget::ShowOrDismissGeneralMessage(bool IsShowing, FString NewTex
 	}
 }
 
+void UMainMenuWidget::ChangeConnectionType(bool bIsLan)
+{
+	if (ConnectionText) 
+	{
+		FString ConnectionString = bIsLan ? FString(TEXT("LAN")) : FString(TEXT("STEAM"));
+		FText NewConnectionText = FText::FromString(ConnectionString);
+		ConnectionText->SetText(NewConnectionText);
+	}
+}
+
 void UMainMenuWidget::StartSessionSearch()
 {
 	if (CurrentSessionText)

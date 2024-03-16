@@ -80,6 +80,7 @@ private:
 	void LaunchSoloGame(FString MapName);
 	void RefreshGameList();
 	void JoinSessionGame(FString SessionId);
+	void ChangeConnection();
 	void QuitGame();
 
 	void ShowErrorMessage(FString ErrorMessage);
