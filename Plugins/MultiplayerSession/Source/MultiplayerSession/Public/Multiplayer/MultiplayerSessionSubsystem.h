@@ -47,7 +47,8 @@ private:
 	bool bCreateSessionOnDestroy{ false };
 	UMultiplayerDataAsset* LastDataAsset;
 
-	const FName SessionNameKey = FName("SESSION_NAME");
+	const FName SessionNameKey{ FName("SESSION_NAME") };
+	const FName NullName{ FName("NULL") };
 
 public:
 	UMultiplayerSessionSubsystem();
@@ -56,10 +57,12 @@ public:
 	* To Handle Session Functionality. Externals classes will call these
 	*/
 	void CreateSession(UMultiplayerDataAsset* DataAsset);
-	void FindSessions(int32 MaxSearchResult);
-	void JoinSession(const FString& SessionResultId);
+	void FindSessions(int32 MaxSearchResult, bool IsLanSearch);
+	void JoinSession(const FString& SessionResultId, bool IsLanJoin);
 	void DestroySession();
 	void StartSession();
+
+	bool IsSteamConnection();
 
 	int32 GetMaxPlayersInSession(FName SessionName);
 
@@ -87,7 +90,7 @@ protected:
 private:
 
 	void ConfigureSessionSettings(class UMultiplayerDataAsset* DataAsset);
-
+	FName GetSubsystemName(bool IsLan);
 	/* 
 	* We'll bind our MultiplayerSessionSubsystem internal callbacks to these
 	*/

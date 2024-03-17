@@ -58,7 +58,7 @@ void UMultiplayerSessionSubsystem::CreateSession(UMultiplayerDataAsset* DataAsse
 	}
 }
 
-void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult)
+void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult, bool IsLanSearch)
 {
 	if (!SessionInterface.IsValid()) 
 	{
@@ -67,12 +67,11 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult)
 
 	FindSessionCompleteDelegateHandle = SessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegate);
 
-	FName SubsystemName = IOnlineSubsystem::Get()->GetSubsystemName();
-	const FName NullName = "NULL";
+	FName SubsystemName = GetSubsystemName(IsLanSearch);
 
 	LastSessionSearch = MakeShareable(new FOnlineSessionSearch());
 	LastSessionSearch->MaxSearchResults = MaxSearchResult;
-	LastSessionSearch->bIsLanQuery = SubsystemName == NullName;
+	LastSessionSearch->bIsLanQuery = IsLanSearch || SubsystemName == NullName;
 	LastSessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
@@ -85,7 +84,7 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResult)
 	}
 }
 
-void UMultiplayerSessionSubsystem::JoinSession(const FString& SessionResultId)
+void UMultiplayerSessionSubsystem::JoinSession(const FString& SessionResultId, bool IsLanJoin)
 {
 	if (!SessionInterface.IsValid())
 	{
@@ -94,6 +93,8 @@ void UMultiplayerSessionSubsystem::JoinSession(const FString& SessionResultId)
 	}
 
 	JoinSessionCompleteDelegateHandle = SessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
+
+	FName SubsystemName = GetSubsystemName(IsLanJoin);
 
 	ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 
@@ -104,6 +105,7 @@ void UMultiplayerSessionSubsystem::JoinSession(const FString& SessionResultId)
 		if (SessionResultId == PossibleSessionResult.GetSessionIdStr())
 		{
 			SessionResult = PossibleSessionResult;
+			SessionResult.Session.SessionSettings.bIsLANMatch = IsLanJoin || SubsystemName == NullName;
 		}
 	}
 
@@ -260,8 +262,7 @@ FString UMultiplayerSessionSubsystem::GetResolvedConnectString()
 
 void UMultiplayerSessionSubsystem::ConfigureSessionSettings(UMultiplayerDataAsset* DataAsset)
 {
-	FName SubsystemName = IOnlineSubsystem::Get()->GetSubsystemName();
-	const FName NullName = "NULL";
+	FName SubsystemName = GetSubsystemName(DataAsset->IsLanMatch);
 
 	SessionSettings = MakeShareable(new FOnlineSessionSettings());
 	SessionSettings->NumPublicConnections = DataAsset->MaxPlayersCount;
@@ -277,4 +278,15 @@ void UMultiplayerSessionSubsystem::ConfigureSessionSettings(UMultiplayerDataAsse
 
 	FOnlineSessionSetting SessionNameSetting = FOnlineSessionSetting(DataAsset->SessionName, EOnlineDataAdvertisementType::ViaOnlineService);
 	SessionSettings->Settings.Add(SessionNameKey, SessionNameSetting);
+}
+
+FName UMultiplayerSessionSubsystem::GetSubsystemName(bool IsLan)
+{
+	return IsLan ? IOnlineSubsystem::Get(NullName)->GetSubsystemName() : IOnlineSubsystem::Get()->GetSubsystemName();
+}
+
+bool UMultiplayerSessionSubsystem::IsSteamConnection()
+{
+	FName SubsystemName = GetSubsystemName(false);
+	return SubsystemName != NullName;
 }

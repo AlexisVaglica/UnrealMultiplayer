@@ -113,17 +113,17 @@ void AMainMenuGameMode::LaunchHostGame()
 
 void AMainMenuGameMode::RefreshGameList() 
 {
-	MultiplayerSession->FindSessions(MaxGamesSearchCount);
+	MultiplayerSession->FindSessions(MaxGamesSearchCount, MultiplayerData->IsLanMatch);
 	MainMenuWidget->StartSessionSearch();
 }
 
 void AMainMenuGameMode::JoinSessionGame(FString SessionId)
 {
-	if (MultiplayerSession) 
+	if (MultiplayerSession && MultiplayerData)
 	{
 		SavePlayerName();
 
-		MultiplayerSession->JoinSession(SessionId);
+		MultiplayerSession->JoinSession(SessionId, MultiplayerData->IsLanMatch);
 		MainMenuWidget->ShowOrDismissGeneralMessage(true, JoinSessionMessage, false);
 	}
 }
@@ -132,7 +132,7 @@ void AMainMenuGameMode::ChangeConnection()
 {
 	if (MultiplayerData && MultiplayerSession) 
 	{
-		if (MultiplayerData->IsLanMatch) 
+		if (MultiplayerData->IsLanMatch && MultiplayerSession->IsSteamConnection())
 		{
 			MultiplayerData->IsLanMatch = false;
 			MainMenuWidget->ChangeConnectionType(false);
@@ -175,6 +175,11 @@ void AMainMenuGameMode::CreateSessionComplete(bool bWasSuccessful)
 	if (bWasSuccessful) 
 	{
 		FString LobbyMapPath = FString::Printf(TEXT("%s?listen"), *LobbyMap.GetLongPackageName());
+
+		if (MultiplayerData && MultiplayerData->IsLanMatch)
+		{
+			LobbyMapPath.Append("?bIsLanMatch=1");
+		}
 
 		UWorld* World = GetWorld();
 
