@@ -63,6 +63,7 @@ public:
 	APlayerController* GetPlayerController();
 
 	void DisableCharacter();
+	void EnableCharacter();
 
 protected:
 	virtual void BeginPlay();

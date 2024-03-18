@@ -27,8 +27,20 @@ void APyramidProjectGameMode::BeginPlay() {
 
 	Super::BeginPlay();
 
+	CurrentCountdownTime = MaxCountdownTime;
+
 	ConfigurePyramidManager();
 	ConfigureOnlineSubsystem();
+}
+
+void APyramidProjectGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!bIsMatchStarted) 
+	{
+		CountdownToStartMatch(DeltaTime);
+	}
 }
 
 void APyramidProjectGameMode::ConfigurePlayerSettings()
@@ -41,8 +53,6 @@ void APyramidProjectGameMode::ConfigurePlayerSettings()
 		FString Message;
 
 		UReadWriteJsonFile::ReadJson(PlayerSettings->PlayerSettingsPath, bSuccess, Message, PlayerSettings);
-
-		UE_LOG(LogTemp, Warning, TEXT("APyramidProjectGameMode - ConfigurePlayerSettings: %s"), *Message);
 	}
 }
 
@@ -69,6 +79,31 @@ void APyramidProjectGameMode::ConfigurePyramidManager()
 	{
 		PyramidManager->OnPyramidChange.BindUObject(this, &APyramidProjectGameMode::ChangePlayerScore);
 		PyramidManager->OnPyramidDestroyed.BindUObject(this, &APyramidProjectGameMode::GameOver);
+	}
+}
+
+void APyramidProjectGameMode::CountdownToStartMatch(float DeltaTime)
+{
+	if (CurrentCountdownTime <= 0) 
+	{
+		bIsMatchStarted = true;
+		PlayerStartMatch();
+	}
+	else
+	{
+		CurrentCountdownTime = MaxCountdownTime - GetWorld()->GetTimeSeconds();
+	}
+}
+
+void APyramidProjectGameMode::PlayerStartMatch()
+{
+	for (APlayerController* PlayerController : PlayerList)
+	{
+		APyramidPlayerController* PyramidPlayerController = Cast<APyramidPlayerController>(PlayerController);
+		if (PyramidPlayerController)
+		{
+			PyramidPlayerController->ClientStartMatchController();
+		}
 	}
 }
 
@@ -113,7 +148,7 @@ void APyramidProjectGameMode::GameOver()
 
 		if (PyramidPlayerController)
 		{
-			PyramidPlayerController->ChangeToGameOver(PlayerStateList);
+			PyramidPlayerController->ClientChangeToGameOver(PlayerStateList);
 		}
 	}
 }
@@ -123,6 +158,12 @@ void APyramidProjectGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	APyramidPlayerState* PlayerState = NewPlayer->GetPlayerState<APyramidPlayerState>();
+
+	APyramidPlayerController* PyramidPlayerController = Cast<APyramidPlayerController>(NewPlayer);
+	if (PyramidPlayerController) 
+	{
+		PyramidPlayerController->ClientUpdateStartMatch(bIsMatchStarted, MaxCountdownTime);
+	}
 
 	ConfigurePlayerSettings();
 

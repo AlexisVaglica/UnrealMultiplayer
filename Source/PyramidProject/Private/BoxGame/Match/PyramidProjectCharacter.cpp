@@ -317,11 +317,16 @@ bool APyramidProjectCharacter::EnableTouchscreenMovement(class UInputComponent* 
 
 void APyramidProjectCharacter::DisableCharacter()
 {
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
-
 	DisableInput(GetPlayerController());
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void APyramidProjectCharacter::EnableCharacter()
+{
+	EnableInput(GetPlayerController());
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }

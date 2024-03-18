@@ -58,6 +58,9 @@ private:
 	UTextBlock* NotifyText;
 
 	UPROPERTY(meta = (BindWidgetOptional))
+	UTextBlock* StartMatchText;
+
+	UPROPERTY(meta = (BindWidgetOptional))
 	UTextBlock* TextNewScore;
 
 	UPROPERTY(meta = (BindWidgetOptional))
@@ -100,6 +103,8 @@ public:
 	void SetGameOverVisibility(const TArray<FPlayerWidgetInfo>& PlayerList, bool IsPlayerAuthority, TSubclassOf<UScoreCellWidget> ScoreCellWidgetClass);
 	void DisplayPlayerName(FString PlayerName);
 	void UpdatePlayerScore(FString PlayerName, float Score);
+
+	void ConfigureCountdownMatch(float CountdownTime);
 
 	void StartShootBar(float Time);
 	void StopShootBar();

@@ -16,7 +16,6 @@ class APyramidProjectGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	//Override begin play from the base class
 	virtual void BeginPlay() override; 
 
 public:
@@ -27,6 +26,12 @@ public:
 private:
 	int PlayerStartIndex = 1;
 	TArray<class APlayerController*> PlayerList;
+
+	float CurrentCountdownTime{ 0.f };
+	bool bIsMatchStarted{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Match Time")
+	float MaxCountdownTime{ 10.f };
 
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UWorld> MainMenuMap;
@@ -44,6 +49,7 @@ private:
 	UMultiplayerSessionSubsystem* MultiplayerSession;
 
 protected:
+	virtual void Tick(float DeltaTime) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
@@ -53,6 +59,9 @@ private:
 	void ConfigurePlayerSettings();
 	void ConfigureOnlineSubsystem();
 	void ConfigurePyramidManager();
+
+	void CountdownToStartMatch(float DeltaTime);
+	void PlayerStartMatch();
 
 	UFUNCTION()
 	void DestroySessionComplete(bool bWasSuccessful);

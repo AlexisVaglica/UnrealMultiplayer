@@ -129,6 +129,14 @@ void APyramidProjectHUD::StopShootBar()
 	}
 }
 
+void APyramidProjectHUD::ConfigureCountdownTimer(float CountdownTime)
+{
+	if (UserWidget) 
+	{
+		UserWidget->ConfigureCountdownMatch(CountdownTime);
+	}
+}
+
 void APyramidProjectHUD::Tick(float TimeDelta)
 {
 	if (UserWidget)

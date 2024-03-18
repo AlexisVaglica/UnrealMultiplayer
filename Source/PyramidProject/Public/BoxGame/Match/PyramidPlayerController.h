@@ -24,16 +24,33 @@ private:
 	UPROPERTY()
 	APyramidProjectCharacter* PyramidCharacter;
 
+	UPROPERTY(EditAnywhere, Category = "Time")
+	float TimeSyncFrecuency{ 2.f };
+	float TimeSyncRunningTime{ 0.f };
+
+	float MaxCountdownTime{ 0.f };
+	float CurrentCountdownTime{ 0.f };
+	bool bIsMatchStarted{ false };
+
+	float ClientServerDeltaTime{ 0.f };
+
 public:
 	UFUNCTION(Client, Reliable)
-	void ChangeToGameOver(const TArray<APlayerState*>& PlayerList);
+	void ClientChangeToGameOver(const TArray<APlayerState*>& PlayerList);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateStartMatch(bool IsMatchStarted, float NewMaxCountdownTime);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientStartMatchController();
 
 	void ChangeScore(int BoxCount);
-
 	void UpdateScoreboard(FString PlayerName, float PlayerScore);
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void ReceivedPlayer() override;
 
 private:
 	void ConfigureCurrentHUD();
@@ -43,9 +60,19 @@ private:
 	void CharacterStartFire(float Time);
 	void CharacterFinishFire();
 
+	void CountdownTimer();
+	float GetServerTime();
+	void CheckTimeSync(float DeltaTime);
+
 	UFUNCTION(Client, Reliable)
-	void ChangeScoreInHUD(int BoxCount);
+	void ClientChangeScoreInHUD(int BoxCount);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastChangeScore(int BoxCount);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRequestServerTime(float TimeOfClientRequest);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRequestServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
 };

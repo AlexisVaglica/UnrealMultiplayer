@@ -43,6 +43,8 @@ public:
 	void StartShootBar(float Time);
 	void StopShootBar();
 
+	void ConfigureCountdownTimer(float CountdownTime);
+
 protected:
 	virtual void Tick(float TimeDelta) override;
 

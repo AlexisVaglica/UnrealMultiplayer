@@ -122,6 +122,20 @@ void UBoxMatchPlayerWidget::UpdatePlayerScore(FString PlayerName, float Score)
 	}
 }
 
+void UBoxMatchPlayerWidget::ConfigureCountdownMatch(float CountdownTime)
+{
+	if (StartMatchText) 
+	{
+		int32 Seconds = FMath::FloorToInt(CountdownTime);
+		FString CountdownString = FString::Printf(TEXT("The Match Start in: %02d"), Seconds);
+		FText CountdownText = FText::FromString(CountdownString);
+		StartMatchText->SetText(CountdownText);
+
+		ESlateVisibility TextVisibility = CountdownTime > 0 ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+		StartMatchText->SetVisibility(TextVisibility);
+	}
+}
+
 void UBoxMatchPlayerWidget::StartShootBar(float Time)
 {
 	ShootBarImage->SetVisibility(ESlateVisibility::Visible);
