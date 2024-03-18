@@ -8,12 +8,12 @@
 #include "PlayerSettings.generated.h"
 
 USTRUCT()
-struct PYRAMIDPROJECT_API FLocalPlayerInfoo
+struct PYRAMIDPROJECT_API FLocalPlayerInfo
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	FString DefaultName;
+	FString DefaultName{ "Box Player" };
 
 	UPROPERTY()
 	FString LocalName{ DefaultName };
@@ -32,8 +32,8 @@ class PYRAMIDPROJECT_API UPlayerSettings : public UObject, public IJsonWriteable
 	
 public:
 	UPROPERTY(EditAnywhere)
-	struct FLocalPlayerInfoo LocalPlayerInfo;
-	const FString PlayerSettingsPath{ "C:/Users/zorro/Documents/PlayerSettings.json" };
+	struct FLocalPlayerInfo LocalPlayerInfo;
+	const FString PlayerSettingsPath{ FPaths::AutomationDir() + "PlayerSettings.json" };
 
 public:
 	virtual TSharedPtr<FJsonObject> ConvertDataToJsonObject() override;
